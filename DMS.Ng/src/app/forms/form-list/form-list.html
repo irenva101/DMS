@@ -1,0 +1,37 @@
+<div class="mock-banner">◐ Prikaz sa mokovanim podacima — nije povezano sa bazom</div>
+
+<header class="page-head">
+  <div>
+    <h1 class="page-title">Obrasci</h1>
+    <p class="page-sub">Gotovi šabloni dokumenata, spremni za preuzimanje.</p>
+  </div>
+</header>
+
+<div class="search-bar">
+  <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="6"/><path d="M17 17l-4.5-4.5"/></svg>
+  <input
+    type="text"
+    placeholder="Pretraži obrazac..."
+    [value]="searchTerm()"
+    (input)="onSearch($any($event.target).value)"
+  />
+</div>
+
+@for (group of groupedForms(); track group.category) {
+  <div class="section-label form-group-label">{{ group.category }}</div>
+  <div class="form-list">
+    @for (form of group.items; track form.id) {
+      <div class="form-card">
+        <div class="form-name">{{ form.name }}</div>
+        <button class="download-btn" type="button" (click)="download(form)">
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v9M6.5 9l3.5 3.5L13.5 9"/><path d="M4 14v1.5A1.5 1.5 0 0 0 5.5 17h9a1.5 1.5 0 0 0 1.5-1.5V14"/></svg>
+          Preuzmi
+        </button>
+      </div>
+    }
+  </div>
+} @empty {
+  <p class="page-sub">Nema obrasca koji odgovara pretrazi "{{ searchTerm() }}".</p>
+}
+
+<app-pager [page]="page()" [totalPages]="totalPages()" (pageChange)="page.set($event)" />

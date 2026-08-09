@@ -1,0 +1,69 @@
+@if (transaction(); as tx) {
+  <a class="back-link" routerLink="/bank">
+    <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 4.5 6 10.5l6.5 6"/></svg>
+    Sve transakcije
+  </a>
+
+  <div class="mock-banner">◐ Prikaz sa mokovanim podacima — nije povezano sa bazom</div>
+
+  <header class="page-head">
+    <div>
+      <h1 class="page-title">{{ tx.company }}</h1>
+      <p class="page-sub">{{ tx.id }}</p>
+    </div>
+  </header>
+
+  <div class="section-label">Potrebni dokumenti</div>
+
+  <div class="docs-row">
+    @for (document of tx.documents; track document.name) {
+      <div class="doc-card">
+        <div class="doc-head">
+          <div class="doc-dot" [class]="statusOf(document.name)">
+            @if (statusOf(document.name) === 'submitted') {
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg>
+            } @else {
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 10h10"/></svg>
+            }
+          </div>
+          <div class="doc-name">{{ document.name }}</div>
+          <div class="doc-status" [class]="statusOf(document.name)">{{ statusLabel(statusOf(document.name)) }}</div>
+        </div>
+
+        <div
+          class="dropzone"
+          [class.dragover]="dragOverDoc() === document.name"
+          tabindex="0"
+          role="button"
+          (dragover)="onDragOver($event, document.name)"
+          (dragleave)="onDragLeave(document.name)"
+          (drop)="onDrop($event, document.name)"
+          (click)="fileInput.click()"
+          (keydown.enter)="fileInput.click()"
+        >
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13V4M6.5 7.5 10 4l3.5 3.5"/><path d="M4 13v1.5A1.5 1.5 0 0 0 5.5 16h9a1.5 1.5 0 0 0 1.5-1.5V13"/></svg>
+          <span>Prevuci fajl ili klikni</span>
+          <input #fileInput type="file" multiple hidden (change)="onFileSelect($event, document.name)" />
+        </div>
+
+        @if (filesOf(document.name).length) {
+          <ul class="doc-chip-list">
+            @for (file of filesOf(document.name); track file) {
+              <li class="doc-chip">
+                <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h6l3 3v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/></svg>
+                <span class="doc-chip-name">{{ file }}</span>
+                <button type="button" class="doc-chip-remove" (click)="removeFile(document.name, file)" aria-label="Ukloni dokument">×</button>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    }
+  </div>
+} @else {
+  <p class="page-sub">Transakcija nije pronađena.</p>
+  <a class="back-link" routerLink="/bank">
+    <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 4.5 6 10.5l6.5 6"/></svg>
+    Sve transakcije
+  </a>
+}

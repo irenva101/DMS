@@ -1,0 +1,53 @@
+<div class="mock-banner">◐ Prikaz sa mokovanim podacima — nije povezano sa bazom</div>
+
+<header class="page-head">
+  <div>
+    <h1 class="page-title">Poslovne transakcije</h1>
+    <p class="page-sub">Praćenje sekvence od zahteva do fakture, po klijentu.</p>
+  </div>
+  <button class="btn-primary" type="button">
+    <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 4v12M4 10h12"/></svg>
+    Nova transakcija
+  </button>
+</header>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num bad">{{ stats().missingDocument }}</div>
+    <div class="stat-label">čekaju dokument</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num warn">{{ stats().pendingVerification }}</div>
+    <div class="stat-label">čekaju verifikaciju</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">{{ stats().completed }}</div>
+    <div class="stat-label">kompletirano</div>
+  </div>
+</div>
+
+<div class="section-label">Aktivne i nedavne transakcije</div>
+
+<div class="tx-list">
+  @for (transaction of transactions(); track transaction.code) {
+    <a class="tx-card" [routerLink]="['/business-transactions', transaction.code]">
+      <div class="tx-id">
+        <div class="tx-client">{{ transaction.client }}</div>
+        <div class="tx-code">{{ transaction.code }}</div>
+      </div>
+
+      <div class="tx-stepper">
+        @for (step of transaction.steps; track step.name; let j = $index) {
+          <div class="step" [class.line-done]="j > 0 && transaction.steps[j - 1].status === 'verified'">
+            <app-status-dot [status]="step.status" />
+            <div class="step-label">{{ step.name }}</div>
+          </div>
+        }
+      </div>
+
+      <div class="tx-flag" [class]="flag(transaction).statusClass">{{ flag(transaction).label }}</div>
+
+      <svg class="chevron" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 4.5l6 5.5-6 5.5"/></svg>
+    </a>
+  }
+</div>

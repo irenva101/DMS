@@ -1,0 +1,71 @@
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 9px 12px;
+  margin-bottom: 8px;
+  color: var(--ink-faint);
+}
+
+.search-bar:focus-within {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.search-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: none;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 13.5px;
+}
+
+.form-group-label {
+  margin-top: 24px;
+}
+
+.form-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.form-name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.download-btn {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: 7px;
+  padding: 6px 11px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.download-btn:hover { border-color: var(--accent); color: var(--accent); }

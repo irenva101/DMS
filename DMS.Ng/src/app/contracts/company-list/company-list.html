@@ -1,0 +1,48 @@
+<div class="mock-banner">◐ Prikaz sa mokovanim podacima — nije povezano sa bazom</div>
+
+<header class="page-head">
+  <div>
+    <h1 class="page-title">Ugovori</h1>
+    <p class="page-sub">Izaberi firmu da vidiš njene ugovore.</p>
+  </div>
+</header>
+
+<div class="section-label">Firme</div>
+
+<div class="search-bar">
+  <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="6"/><path d="M17 17l-4.5-4.5"/></svg>
+  <input
+    type="text"
+    placeholder="Pretraži firmu..."
+    [value]="searchTerm()"
+    (input)="onSearch($any($event.target).value)"
+  />
+</div>
+
+<div class="company-list">
+  @for (company of pagedCompanies(); track company.id) {
+    <a class="company-card" [routerLink]="['/contracts', company.id]">
+      <div class="company-logo" [style.background]="logoColor(company.id)">{{ initials(company.name) }}</div>
+      <div class="company-name">{{ company.name }}</div>
+      <div class="company-meta">{{ contractCount(company.id) }} {{ contractCount(company.id) === 1 ? 'ugovor' : 'ugovora' }}</div>
+      <svg class="chevron" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 4.5l6 5.5-6 5.5"/></svg>
+    </a>
+  } @empty {
+    <p class="page-sub">Nema firme koja odgovara pretrazi "{{ searchTerm() }}".</p>
+  }
+</div>
+
+<app-pager [page]="page()" [totalPages]="totalPages()" (pageChange)="page.set($event)" />
+
+@if (recentlyViewed().length) {
+  <div class="section-label recent-label">Nedavno pregledano</div>
+
+  <div class="recent-list">
+    @for (company of recentlyViewed(); track company.id) {
+      <a class="recent-item" [routerLink]="['/contracts', company.id]">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.5V10l3 2"/><circle cx="10" cy="10" r="7"/></svg>
+        {{ company.name }}
+      </a>
+    }
+  </div>
+}

@@ -1,0 +1,37 @@
+<div class="mock-banner">◐ Prikaz sa mokovanim podacima — nije povezano sa bazom</div>
+
+<header class="page-head">
+  <div>
+    <h1 class="page-title">Banka</h1>
+    <p class="page-sub">Svaka transakcija zahteva JCI, Fakturu i Nalog 70.</p>
+  </div>
+</header>
+
+<div class="section-label">Transakcije</div>
+
+<div class="search-bar">
+  <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="6"/><path d="M17 17l-4.5-4.5"/></svg>
+  <input
+    type="text"
+    placeholder="Pretraži transakciju ili firmu..."
+    [value]="searchTerm()"
+    (input)="onSearch($any($event.target).value)"
+  />
+</div>
+
+<div class="bank-list">
+  @for (transaction of pagedTransactions(); track transaction.id) {
+    <a class="bank-card" [routerLink]="['/bank', transaction.id]">
+      <div class="bank-main">
+        <div class="bank-company">{{ transaction.company }}</div>
+        <div class="bank-code">{{ transaction.id }}</div>
+      </div>
+      <div class="bank-flag" [class]="flag(transaction).statusClass">{{ flag(transaction).label }}</div>
+      <svg class="chevron" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 4.5l6 5.5-6 5.5"/></svg>
+    </a>
+  } @empty {
+    <p class="page-sub">Nema transakcije koja odgovara pretrazi "{{ searchTerm() }}".</p>
+  }
+</div>
+
+<app-pager [page]="page()" [totalPages]="totalPages()" (pageChange)="page.set($event)" />

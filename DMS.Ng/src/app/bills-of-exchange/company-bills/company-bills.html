@@ -1,0 +1,64 @@
+@if (company(); as comp) {
+  <a class="back-link" routerLink="/bills-of-exchange">
+    <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 4.5 6 10.5l6.5 6"/></svg>
+    Sve firme
+  </a>
+
+  <div class="mock-banner">◐ Prikaz sa mokovanim podacima — nije povezano sa bazom</div>
+
+  <header class="page-head">
+    <div class="company-heading">
+      <div class="company-logo" [style.background]="logoColor(comp.id)">{{ initials(comp.name) }}</div>
+      <div>
+        <h1 class="page-title">{{ comp.name }}</h1>
+        <p class="page-sub">Menice za ovu firmu.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="section-label">Menice</div>
+
+  <div class="search-bar">
+    <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="6"/><path d="M17 17l-4.5-4.5"/></svg>
+    <input
+      type="text"
+      placeholder="Pretraži menicu..."
+      [value]="searchTerm()"
+      (input)="onSearch($any($event.target).value)"
+    />
+  </div>
+
+  <div class="bill-list">
+    @for (bill of pagedBills(); track bill.id) {
+      <div class="bill-card">
+        <div class="bill-main">
+          <div class="bill-title">Menica {{ bill.id }}</div>
+        </div>
+
+        <div class="bill-dates">
+          <span>Izdata: {{ formatDate(bill.issueDate) }}</span>
+          <span>Dospeva: {{ formatDate(bill.maturityDate) }}</span>
+        </div>
+
+        <div class="bill-amount">{{ formatAmount(bill.amount) }}</div>
+
+        <div class="bill-status" [class]="status(bill)">{{ statusLabel(status(bill)) }}</div>
+
+        <button class="download-btn" type="button" (click)="download(bill)">
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v9M6.5 9l3.5 3.5L13.5 9"/><path d="M4 14v1.5A1.5 1.5 0 0 0 5.5 17h9a1.5 1.5 0 0 0 1.5-1.5V14"/></svg>
+          Preuzmi
+        </button>
+      </div>
+    } @empty {
+      <p class="page-sub">Nema menice koja odgovara pretrazi "{{ searchTerm() }}".</p>
+    }
+  </div>
+
+  <app-pager [page]="page()" [totalPages]="totalPages()" (pageChange)="page.set($event)" />
+} @else {
+  <p class="page-sub">Firma nije pronađena.</p>
+  <a class="back-link" routerLink="/bills-of-exchange">
+    <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 4.5 6 10.5l6.5 6"/></svg>
+    Sve firme
+  </a>
+}

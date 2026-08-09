@@ -1,0 +1,13 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex: none;
+}
+
+:host.verified { background: var(--status-verified); color: var(--status-ink); }
+:host.pending { background: var(--status-pending); color: var(--status-ink); }
+:host.missing { background: var(--surface); border: 2px dashed var(--line-strong); color: var(--ink-faint); }
+
+svg { width: 60%; height: 60%; }

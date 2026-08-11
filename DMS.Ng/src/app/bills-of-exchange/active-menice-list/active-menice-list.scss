@@ -1,0 +1,103 @@
+.menica-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 26px;
+}
+
+.menica-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 15px 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  text-decoration: none;
+  color: inherit;
+}
+
+.menica-card:hover { background: var(--surface-sunken); }
+.menica-card:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.menica-main {
+  flex: 0 0 150px;
+  min-width: 0;
+}
+
+.menica-company {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.menica-code {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-faint);
+}
+
+.menica-stepper {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+}
+
+.step {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.step::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  left: -50%;
+  width: 100%;
+  height: 2px;
+  background: var(--line-strong);
+  z-index: 0;
+}
+
+.step:first-child::before { display: none; }
+.step.line-done::before { background: var(--status-verified); }
+
+.step-label {
+  font-size: 10px;
+  color: var(--ink-faint);
+  text-align: center;
+  line-height: 1.2;
+  max-width: 90px;
+}
+
+.menica-flag {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.menica-flag.missing { background: var(--status-missing-soft); color: var(--status-missing); }
+.menica-flag.pending { background: var(--status-pending-soft); color: var(--status-pending); }
+.menica-flag.done { background: var(--status-verified-soft); color: var(--status-verified); }
+
+.chevron {
+  flex: none;
+  color: var(--ink-faint);
+}
+
+@media (max-width: 760px) {
+  .menica-stepper { display: none; }
+}

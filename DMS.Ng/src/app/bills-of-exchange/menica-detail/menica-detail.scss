@@ -10,17 +10,60 @@
 
 .back-link:hover { color: var(--accent); }
 
+.step-section {
+  margin-top: 26px;
+}
+
+.step-section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.step-number {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.step-title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.step-status {
+  flex: none;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.step-status.verified { background: var(--status-verified-soft); color: var(--status-verified); }
+.step-status.pending { background: var(--status-pending-soft); color: var(--status-pending); }
+.step-status.missing { background: var(--status-missing-soft); color: var(--status-missing); }
+
 .docs-row {
   display: flex;
-  gap: 26px;
-  overflow-x: auto;
-  padding: 4px 4px 10px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .doc-card {
-  position: relative;
-  flex: 1 1 150px;
-  min-width: 150px;
+  flex: 1 1 220px;
+  min-width: 220px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -29,19 +72,6 @@
   border-radius: 12px;
   box-shadow: var(--shadow);
   padding: 16px 14px;
-}
-
-.doc-card:not(:first-child)::before {
-  content: "→";
-  position: absolute;
-  left: -20px;
-  top: 26px;
-  color: var(--line-strong);
-  font-size: 15px;
-}
-
-.doc-card.line-done:not(:first-child)::before {
-  color: var(--status-verified);
 }
 
 .doc-head {

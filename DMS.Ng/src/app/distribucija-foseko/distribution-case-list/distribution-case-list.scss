@@ -27,13 +27,13 @@
   font-size: 13.5px;
 }
 
-.bank-list {
+.case-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.bank-card {
+.case-card {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -46,26 +46,26 @@
   color: inherit;
 }
 
-.bank-card:hover { background: var(--surface-sunken); }
-.bank-card:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.case-card:hover { background: var(--surface-sunken); }
+.case-card:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 
-.bank-main {
+.case-main {
   flex: 1;
   min-width: 0;
 }
 
-.bank-company {
+.case-company {
   font-size: 14px;
   font-weight: 600;
 }
 
-.bank-code {
+.case-code {
   font-family: var(--font-mono);
   font-size: 11.5px;
   color: var(--ink-faint);
 }
 
-.bank-flag {
+.case-flag {
   flex: none;
   font-size: 11.5px;
   font-weight: 600;
@@ -74,9 +74,9 @@
   white-space: nowrap;
 }
 
-.bank-flag.complete { background: var(--status-verified-soft); color: var(--status-verified); }
-.bank-flag.partial { background: var(--status-pending-soft); color: var(--status-pending); }
-.bank-flag.missing { background: var(--status-missing-soft); color: var(--status-missing); }
+.case-flag.complete { background: var(--status-verified-soft); color: var(--status-verified); }
+.case-flag.partial { background: var(--status-pending-soft); color: var(--status-pending); }
+.case-flag.missing { background: var(--status-missing-soft); color: var(--status-missing); }
 
 .chevron {
   flex: none;

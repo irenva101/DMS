@@ -1,0 +1,25 @@
+<div class="section-label">Aktivne menice</div>
+
+<div class="menica-list">
+  @for (menica of menice(); track menica.id) {
+    <a class="menica-card" [routerLink]="['/bills-of-exchange/menice', menica.id]">
+      <div class="menica-main">
+        <div class="menica-company">{{ menica.company }}</div>
+        <div class="menica-code">{{ menica.id }}</div>
+      </div>
+
+      <div class="menica-stepper">
+        @for (step of menica.steps; track step.name; let j = $index) {
+          <div class="step" [class.line-done]="j > 0 && stepStatus(menica.steps[j - 1]) === 'verified'">
+            <app-status-dot [status]="stepStatus(step)" />
+            <div class="step-label">{{ step.name }}</div>
+          </div>
+        }
+      </div>
+
+      <div class="menica-flag" [class]="flag(menica).statusClass">{{ flag(menica).label }}</div>
+
+      <svg class="chevron" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 4.5l6 5.5-6 5.5"/></svg>
+    </a>
+  }
+</div>

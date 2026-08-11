@@ -2,64 +2,64 @@
 
 <header class="page-head">
   <div>
-    <h1 class="page-title">Banka</h1>
-    <p class="page-sub">Domaća plaćanja zahtevaju JCI, Fakturu, Nalog 70 i Izvod iz banke. Inostrana dodatno zahtevaju Zahtev za kupovinu deviza.</p>
+    <h1 class="page-title">Distribucija Foseko</h1>
+    <p class="page-sub">Od zahteva za ponudu do isporuke, po kupcu.</p>
   </div>
 </header>
 
-<div class="section-label">Domaća plaćanja</div>
+<div class="section-label">Domaći kupci</div>
 
 <div class="search-bar">
   <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="6"/><path d="M17 17l-4.5-4.5"/></svg>
   <input
     type="text"
-    placeholder="Pretraži transakciju ili firmu..."
+    placeholder="Pretraži kupca ili slučaj..."
     [value]="domestic.searchTerm()"
     (input)="onSearch(domestic, $any($event.target).value)"
   />
 </div>
 
-<div class="bank-list">
-  @for (transaction of domestic.paged(); track transaction.id) {
-    <a class="bank-card" [routerLink]="['/bank', transaction.id]">
-      <div class="bank-main">
-        <div class="bank-company">{{ transaction.company }}</div>
-        <div class="bank-code">{{ transaction.id }}</div>
+<div class="case-list">
+  @for (distributionCase of domestic.paged(); track distributionCase.id) {
+    <a class="case-card" [routerLink]="['/distribucija-foseko', distributionCase.id]">
+      <div class="case-main">
+        <div class="case-company">{{ distributionCase.company }}</div>
+        <div class="case-code">{{ distributionCase.id }}</div>
       </div>
-      <div class="bank-flag" [class]="flag(transaction).statusClass">{{ flag(transaction).label }}</div>
+      <div class="case-flag" [class]="flag(distributionCase).statusClass">{{ flag(distributionCase).label }}</div>
       <svg class="chevron" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 4.5l6 5.5-6 5.5"/></svg>
     </a>
   } @empty {
-    <p class="page-sub">Nema transakcije koja odgovara pretrazi "{{ domestic.searchTerm() }}".</p>
+    <p class="page-sub">Nema slučaja koji odgovara pretrazi "{{ domestic.searchTerm() }}".</p>
   }
 </div>
 
 <app-pager [page]="domestic.page()" [totalPages]="domestic.totalPages()" (pageChange)="domestic.page.set($event)" />
 
-<div class="section-label foreign-label">Inostrana plaćanja</div>
+<div class="section-label foreign-label">Inostrani kupci</div>
 
 <div class="search-bar">
   <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="6"/><path d="M17 17l-4.5-4.5"/></svg>
   <input
     type="text"
-    placeholder="Pretraži transakciju ili firmu..."
+    placeholder="Pretraži kupca ili slučaj..."
     [value]="foreign.searchTerm()"
     (input)="onSearch(foreign, $any($event.target).value)"
   />
 </div>
 
-<div class="bank-list">
-  @for (transaction of foreign.paged(); track transaction.id) {
-    <a class="bank-card" [routerLink]="['/bank', transaction.id]">
-      <div class="bank-main">
-        <div class="bank-company">{{ transaction.company }}</div>
-        <div class="bank-code">{{ transaction.id }}</div>
+<div class="case-list">
+  @for (distributionCase of foreign.paged(); track distributionCase.id) {
+    <a class="case-card" [routerLink]="['/distribucija-foseko', distributionCase.id]">
+      <div class="case-main">
+        <div class="case-company">{{ distributionCase.company }}</div>
+        <div class="case-code">{{ distributionCase.id }}</div>
       </div>
-      <div class="bank-flag" [class]="flag(transaction).statusClass">{{ flag(transaction).label }}</div>
+      <div class="case-flag" [class]="flag(distributionCase).statusClass">{{ flag(distributionCase).label }}</div>
       <svg class="chevron" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 4.5l6 5.5-6 5.5"/></svg>
     </a>
   } @empty {
-    <p class="page-sub">Nema transakcije koja odgovara pretrazi "{{ foreign.searchTerm() }}".</p>
+    <p class="page-sub">Nema slučaja koji odgovara pretrazi "{{ foreign.searchTerm() }}".</p>
   }
 </div>
 

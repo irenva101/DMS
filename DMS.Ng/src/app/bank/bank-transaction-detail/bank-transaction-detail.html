@@ -16,8 +16,8 @@
   <div class="section-label">Potrebni dokumenti</div>
 
   <div class="docs-row">
-    @for (document of tx.documents; track document.name) {
-      <div class="doc-card">
+    @for (document of tx.documents; track document.name; let j = $index) {
+      <div class="doc-card" [class.line-done]="j > 0 && statusOf(tx.documents[j - 1].name) === 'submitted'">
         <div class="doc-head">
           <div class="doc-dot" [class]="statusOf(document.name)">
             @if (statusOf(document.name) === 'submitted') {

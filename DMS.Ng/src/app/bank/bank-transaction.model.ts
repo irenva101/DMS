@@ -1,4 +1,5 @@
 export type BankDocumentStatus = 'submitted' | 'missing';
+export type BankTransactionType = 'domestic' | 'foreign';
 
 export interface BankDocument {
   name: string;
@@ -9,5 +10,6 @@ export interface BankDocument {
 export interface BankTransaction {
   id: string;
   company: string;
+  type: BankTransactionType;
   documents: BankDocument[];
 }

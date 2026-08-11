@@ -5,12 +5,13 @@ import { Company } from '../bill.model';
 import { companyColor, companyInitials } from '../../contracts/company-logo';
 import { Pager } from '../../shared/pager/pager';
 import { paginate } from '../../shared/pager/paginate';
+import { ActiveMeniceList } from '../active-menice-list/active-menice-list';
 
 const PAGE_SIZE = 3;
 
 @Component({
   selector: 'app-bill-company-list',
-  imports: [RouterLink, Pager],
+  imports: [RouterLink, Pager, ActiveMeniceList],
   templateUrl: './company-list.html',
   styleUrl: './company-list.scss'
 })

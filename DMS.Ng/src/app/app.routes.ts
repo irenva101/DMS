@@ -44,6 +44,10 @@ export const routes: Routes = [
     loadComponent: () => import('./bills-of-exchange/company-list/company-list').then((m) => m.CompanyList)
   },
   {
+    path: 'bills-of-exchange/menice/:menicaId',
+    loadComponent: () => import('./bills-of-exchange/menica-detail/menica-detail').then((m) => m.MenicaDetail)
+  },
+  {
     path: 'bills-of-exchange/:companyId',
     loadComponent: () => import('./bills-of-exchange/company-bills/company-bills').then((m) => m.CompanyBills)
   },
@@ -52,5 +56,17 @@ export const routes: Routes = [
     loadComponent: () => import('./forms/form-list/form-list').then((m) => m.FormList)
   },
   { path: 'warehouse', loadComponent: loadPlaceholder, data: { name: 'Skladište' } },
+  {
+    path: 'distribucija-foseko',
+    loadComponent: () =>
+      import('./distribucija-foseko/distribution-case-list/distribution-case-list').then((m) => m.DistributionCaseList)
+  },
+  {
+    path: 'distribucija-foseko/:caseId',
+    loadComponent: () =>
+      import('./distribucija-foseko/distribution-case-detail/distribution-case-detail').then(
+        (m) => m.DistributionCaseDetail
+      )
+  },
   { path: 'archive', loadComponent: loadPlaceholder, data: { name: 'Arhiva' } }
 ];

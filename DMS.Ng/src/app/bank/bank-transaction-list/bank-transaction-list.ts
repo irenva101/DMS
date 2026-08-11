@@ -1,7 +1,7 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, Signal, WritableSignal, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BankTransactionService } from '../bank-transaction.service';
-import { BankTransaction } from '../bank-transaction.model';
+import { BankTransaction, BankTransactionType } from '../bank-transaction.model';
 import { Pager } from '../../shared/pager/pager';
 import { paginate } from '../../shared/pager/paginate';
 
@@ -10,6 +10,13 @@ const PAGE_SIZE = 3;
 interface TransactionFlag {
   statusClass: 'complete' | 'partial' | 'missing';
   label: string;
+}
+
+interface TransactionGroup {
+  searchTerm: WritableSignal<string>;
+  page: WritableSignal<number>;
+  paged: Signal<BankTransaction[]>;
+  totalPages: Signal<number>;
 }
 
 @Component({
@@ -22,28 +29,13 @@ export class BankTransactionList {
   private readonly service = inject(BankTransactionService);
 
   protected readonly transactions = signal<BankTransaction[]>(this.service.getTransactions());
-  protected readonly searchTerm = signal('');
-  protected readonly page = signal(1);
 
-  protected readonly filteredTransactions = computed(() => {
-    const term = this.searchTerm().trim().toLowerCase();
-    if (!term) return this.transactions();
-    return this.transactions().filter(
-      (t) => t.company.toLowerCase().includes(term) || t.id.toLowerCase().includes(term)
-    );
-  });
+  protected readonly domestic = this.createGroup('domestic');
+  protected readonly foreign = this.createGroup('foreign');
 
-  protected readonly totalPages = computed(() =>
-    Math.max(1, Math.ceil(this.filteredTransactions().length / PAGE_SIZE))
-  );
-
-  protected readonly pagedTransactions = computed(() =>
-    paginate(this.filteredTransactions(), this.page(), PAGE_SIZE)
-  );
-
-  protected onSearch(value: string): void {
-    this.searchTerm.set(value);
-    this.page.set(1);
+  protected onSearch(group: TransactionGroup, value: string): void {
+    group.searchTerm.set(value);
+    group.page.set(1);
   }
 
   protected flag(transaction: BankTransaction): TransactionFlag {
@@ -53,5 +45,22 @@ export class BankTransactionList {
       return { statusClass: 'missing', label: 'Nijedan dokument nije predat' };
     }
     return { statusClass: 'partial', label: `${missing} od ${transaction.documents.length} nedostaje` };
+  }
+
+  private createGroup(type: BankTransactionType): TransactionGroup {
+    const searchTerm = signal('');
+    const page = signal(1);
+
+    const filtered = computed(() => {
+      const term = searchTerm().trim().toLowerCase();
+      return this.transactions().filter(
+        (t) => t.type === type && (!term || t.company.toLowerCase().includes(term) || t.id.toLowerCase().includes(term))
+      );
+    });
+
+    const totalPages = computed(() => Math.max(1, Math.ceil(filtered().length / PAGE_SIZE)));
+    const paged = computed(() => paginate(filtered(), page(), PAGE_SIZE));
+
+    return { searchTerm, page, paged, totalPages };
   }
 }

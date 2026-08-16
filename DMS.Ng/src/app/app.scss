@@ -100,6 +100,30 @@ nav.modules {
 
 .nav-item.active svg { opacity: 1; }
 
+.nav-subitem {
+  display: flex;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 30px;
+  margin-top: -2px;
+  font-size: 12.5px;
+  pointer-events: none;
+  transition: max-height 0.2s ease, opacity 0.15s ease, padding 0.2s ease;
+}
+
+.nav-group:hover .nav-subitem,
+.nav-group:focus-within .nav-subitem,
+.nav-subitem.active {
+  max-height: 40px;
+  opacity: 1;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  pointer-events: auto;
+}
+
 .sidebar-foot {
   margin-top: auto;
   padding: 10px 10px 0;

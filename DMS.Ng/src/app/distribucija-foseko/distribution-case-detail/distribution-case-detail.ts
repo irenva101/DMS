@@ -2,7 +2,8 @@ import { Component, computed, effect, inject, input, signal } from '@angular/cor
 import { RouterLink } from '@angular/router';
 import { StepStatus } from '../../business-transactions/business-transaction.model';
 import { DistributionCaseService } from '../distribution-case.service';
-import { DistributionDocumentStatus, DistributionStep } from '../distribution-case.model';
+import { DistributionCase, DistributionDocumentStatus, DistributionStep } from '../distribution-case.model';
+import { ProgressStep, StepProgress } from '../../shared/step-progress/step-progress';
 
 function key(stepName: string, docName: string): string {
   return `${stepName}::${docName}`;
@@ -10,7 +11,7 @@ function key(stepName: string, docName: string): string {
 
 @Component({
   selector: 'app-distribution-case-detail',
-  imports: [RouterLink],
+  imports: [RouterLink, StepProgress],
   templateUrl: './distribution-case-detail.html',
   styleUrl: './distribution-case-detail.scss'
 })
@@ -67,6 +68,10 @@ export class DistributionCaseDetail {
 
   protected stepStatusLabel(status: StepStatus): string {
     return status === 'verified' ? 'Kompletno' : status === 'pending' ? 'U toku' : 'Nedostaje';
+  }
+
+  protected progressSteps(distributionCase: DistributionCase): ProgressStep[] {
+    return distributionCase.steps.map((step) => ({ name: step.name, status: this.stepStatusOf(step) }));
   }
 
   protected isDragOver(stepName: string, docName: string): boolean {

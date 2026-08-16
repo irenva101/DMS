@@ -13,6 +13,8 @@
     </div>
   </header>
 
+  <app-step-progress [steps]="progressSteps(c)" />
+
   @for (step of c.steps; track step.name; let i = $index) {
     <section class="step-section">
       <div class="step-section-head">

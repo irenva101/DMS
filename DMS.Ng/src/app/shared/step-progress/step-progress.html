@@ -1,0 +1,15 @@
+<div class="step-progress">
+  <div class="step-progress-top">
+    <span class="step-progress-count">{{ completedCount() }}/{{ steps().length }} koraka završeno</span>
+    @if (currentStepName(); as current) {
+      <span class="step-progress-current">Sledeći korak: {{ current }}</span>
+    } @else {
+      <span class="step-progress-current">Kompletirano</span>
+    }
+  </div>
+  <div class="step-progress-track">
+    @for (step of steps(); track step.name) {
+      <div class="step-progress-seg" [class]="step.status" [title]="step.name"></div>
+    }
+  </div>
+</div>

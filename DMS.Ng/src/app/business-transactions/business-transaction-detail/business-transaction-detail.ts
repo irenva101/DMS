@@ -2,11 +2,12 @@ import { Component, computed, effect, inject, input, signal } from '@angular/cor
 import { RouterLink } from '@angular/router';
 import { StatusDot } from '../status-dot/status-dot';
 import { BusinessTransactionService } from '../business-transaction.service';
-import { StepStatus } from '../business-transaction.model';
+import { BusinessTransaction, StepStatus } from '../business-transaction.model';
+import { ProgressStep, StepProgress } from '../../shared/step-progress/step-progress';
 
 @Component({
   selector: 'app-business-transaction-detail',
-  imports: [RouterLink, StatusDot],
+  imports: [RouterLink, StatusDot, StepProgress],
   templateUrl: './business-transaction-detail.html',
   styleUrl: './business-transaction-detail.scss'
 })
@@ -47,6 +48,10 @@ export class BusinessTransactionDetail {
 
   protected statusLabel(status: StepStatus): string {
     return status === 'verified' ? 'Verifikovano' : status === 'pending' ? 'Priloženo' : 'Nedostaje';
+  }
+
+  protected progressSteps(tx: BusinessTransaction): ProgressStep[] {
+    return tx.steps.map((step) => ({ name: step.name, status: this.statusOf(step.name) }));
   }
 
   protected onDragOver(event: DragEvent, stepName: string): void {

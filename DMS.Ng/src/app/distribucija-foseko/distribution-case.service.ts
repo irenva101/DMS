@@ -20,9 +20,10 @@ const CORE_STEP_DOCUMENTS: string[][] = [
 const DOMESTIC_EXTRA_STEP_NAMES = ['Otpremnica', 'Faktura'];
 const DOMESTIC_EXTRA_STEP_DOCUMENTS: string[][] = [['Otpremnica'], ['Faktura']];
 
-const FOREIGN_EXTRA_STEP_NAMES = ['Isporuka'];
+const FOREIGN_EXTRA_STEP_NAMES = ['Isporuka', 'Otpremnica'];
 const FOREIGN_EXTRA_STEP_DOCUMENTS: string[][] = [
-  ['JCI', 'Potvrda o kvalitetu', 'Račun', 'CMR', 'Izjava o poreklu na računu']
+  ['JCI', 'Potvrda o kvalitetu', 'Račun', 'CMR', 'Izjava o poreklu na računu'],
+  ['Otpremnica']
 ];
 
 function doc(name: string, status: DistributionDocumentStatus): DistributionDocument {
@@ -111,7 +112,8 @@ export class DistributionCaseService {
         ['submitted', 'submitted'],
         ['submitted'],
         ['submitted', 'submitted'],
-        ['submitted', 'submitted', 'submitted', 'submitted', 'submitted']
+        ['submitted', 'submitted', 'submitted', 'submitted', 'submitted'],
+        ['submitted']
       ])
     },
     {
@@ -125,7 +127,8 @@ export class DistributionCaseService {
         ['submitted', 'missing'],
         ['missing'],
         ['missing', 'missing'],
-        ['missing', 'missing', 'missing', 'missing', 'missing']
+        ['missing', 'missing', 'missing', 'missing', 'missing'],
+        ['missing']
       ])
     },
     {
@@ -139,7 +142,8 @@ export class DistributionCaseService {
         ['missing', 'missing'],
         ['missing'],
         ['missing', 'missing'],
-        ['missing', 'missing', 'missing', 'missing', 'missing']
+        ['missing', 'missing', 'missing', 'missing', 'missing'],
+        ['missing']
       ])
     }
   ];

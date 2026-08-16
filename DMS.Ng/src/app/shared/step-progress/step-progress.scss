@@ -1,0 +1,41 @@
+.step-progress {
+  margin: 16px 0 28px;
+}
+
+.step-progress-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.step-progress-count {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.step-progress-current {
+  color: var(--ink-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.step-progress-track {
+  display: flex;
+  gap: 4px;
+}
+
+.step-progress-seg {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+}
+
+.step-progress-seg.verified { background: var(--status-verified); border-color: var(--status-verified); }
+.step-progress-seg.pending { background: var(--status-pending); border-color: var(--status-pending); }
+.step-progress-seg.missing { background: var(--surface-sunken); border: 1px dashed var(--line-strong); }

@@ -2,7 +2,8 @@ import { Component, computed, effect, inject, input, signal } from '@angular/cor
 import { RouterLink } from '@angular/router';
 import { StepStatus } from '../../business-transactions/business-transaction.model';
 import { MenicaService } from '../menica.service';
-import { MenicaDocumentStatus, MenicaStep } from '../menica.model';
+import { Menica, MenicaDocumentStatus, MenicaStep } from '../menica.model';
+import { ProgressStep, StepProgress } from '../../shared/step-progress/step-progress';
 
 function key(stepName: string, docName: string): string {
   return `${stepName}::${docName}`;
@@ -10,7 +11,7 @@ function key(stepName: string, docName: string): string {
 
 @Component({
   selector: 'app-menica-detail',
-  imports: [RouterLink],
+  imports: [RouterLink, StepProgress],
   templateUrl: './menica-detail.html',
   styleUrl: './menica-detail.scss'
 })
@@ -65,6 +66,10 @@ export class MenicaDetail {
 
   protected stepStatusLabel(status: StepStatus): string {
     return status === 'verified' ? 'Kompletno' : status === 'pending' ? 'U toku' : 'Nedostaje';
+  }
+
+  protected progressSteps(menica: Menica): ProgressStep[] {
+    return menica.steps.map((step) => ({ name: step.name, status: this.stepStatusOf(step) }));
   }
 
   protected isDragOver(stepName: string, docName: string): boolean {

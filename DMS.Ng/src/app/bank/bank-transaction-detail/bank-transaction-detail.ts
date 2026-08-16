@@ -1,11 +1,12 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BankTransactionService } from '../bank-transaction.service';
-import { BankDocumentStatus } from '../bank-transaction.model';
+import { BankDocumentStatus, BankTransaction } from '../bank-transaction.model';
+import { ProgressStep, StepProgress } from '../../shared/step-progress/step-progress';
 
 @Component({
   selector: 'app-bank-transaction-detail',
-  imports: [RouterLink],
+  imports: [RouterLink, StepProgress],
   templateUrl: './bank-transaction-detail.html',
   styleUrl: './bank-transaction-detail.scss'
 })
@@ -46,6 +47,13 @@ export class BankTransactionDetail {
 
   protected statusLabel(status: BankDocumentStatus): string {
     return status === 'submitted' ? 'Predato' : 'Nedostaje';
+  }
+
+  protected progressSteps(tx: BankTransaction): ProgressStep[] {
+    return tx.documents.map((document) => ({
+      name: document.name,
+      status: this.statusOf(document.name) === 'submitted' ? 'verified' : 'missing'
+    }));
   }
 
   protected onDragOver(event: DragEvent, name: string): void {

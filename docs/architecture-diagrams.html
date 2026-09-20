@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMS — Architecture Diagrams</title>
+<style>
+  :root {
+    --blueprint: #0F2A52;
+    --blueprint-deep: #0A1D3D;
+    --panel: #0D2C58;
+    --ink: #EAF2FF;
+    --ink-dim: #9FB8DC;
+    --accent: #FFB454;
+    --grid: rgba(234,242,255,0.07);
+    --border: rgba(234,242,255,0.32);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--blueprint);
+    color: var(--ink);
+    margin: 0;
+    padding: 48px 20px 80px;
+    font-family: ui-sans-serif, "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .sheet-set {
+    max-width: 920px;
+    margin: 0 auto;
+  }
+
+  .titleblock {
+    border: 1px solid var(--border);
+    padding: 22px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+
+  .titleblock h1 {
+    font-family: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 1.5rem;
+    letter-spacing: 0.02em;
+    margin: 0 0 6px;
+    text-wrap: balance;
+    font-weight: 700;
+  }
+
+  .titleblock p {
+    margin: 0;
+    color: var(--ink-dim);
+    max-width: 60ch;
+  }
+
+  .meta {
+    font-family: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .sheet {
+    margin-bottom: 48px;
+  }
+
+  .sheet-eyebrow {
+    font-family: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .sheet h2 {
+    font-family: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 1.1rem;
+    letter-spacing: 0.03em;
+    margin: 0 0 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  figure {
+    margin: 0;
+  }
+
+  .drawing {
+    border: 1px solid var(--border);
+    background-color: var(--panel);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 22px 22px;
+    padding: 20px;
+    overflow-x: auto;
+  }
+
+  .drawing pre.mermaid {
+    margin: 0;
+    min-width: 560px;
+  }
+
+  figcaption {
+    font-size: 0.9rem;
+    color: var(--ink-dim);
+    margin-top: 12px;
+    max-width: 72ch;
+  }
+
+  .footer-note {
+    font-family: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--ink-dim);
+    letter-spacing: 0.06em;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="sheet-set">
+
+  <div class="titleblock">
+    <div>
+      <h1>DMS — Architecture Diagrams</h1>
+      <p>Component map and the two request flows that matter most: uploading and downloading a document.</p>
+    </div>
+    <div class="meta">SHEET SET · 3 DRAWINGS<br/>REV 1 · 2026</div>
+  </div>
+
+  <div class="sheet">
+    <div class="sheet-eyebrow">SHEET 1 / 3 — SYSTEM COMPONENTS</div>
+    <h2>Who talks to whom</h2>
+    <figure>
+      <div class="drawing">
+<pre class="mermaid">
+%%{init: {'theme':'base', 'themeVariables': {
+  'background': '#0D2C58',
+  'primaryColor': '#0D2C58',
+  'primaryTextColor': '#EAF2FF',
+  'primaryBorderColor': '#EAF2FF',
+  'lineColor': '#EAF2FF',
+  'secondaryColor': '#123463',
+  'tertiaryColor': '#123463',
+  'fontFamily': 'ui-monospace, Consolas, monospace',
+  'clusterBkg': '#0A1D3D',
+  'clusterBorder': '#9FB8DC'
+}}}%%
+flowchart LR
+  subgraph Client["CLIENT"]
+    FE["Angular FE"]
+  end
+
+  subgraph App[".NET MODULAR MONOLITH"]
+    API["API layer<br/>controllers + JWT auth"]
+    SVC["Service layer<br/>business logic +<br/>EF Core tenant filter"]
+  end
+
+  subgraph Data["DATA & STORAGE"]
+    DB[("Postgres<br/>tenant_id on every table")]
+    STORE{{"IDocumentStorage"}}
+    LOCAL["LocalFileStorage<br/>VPS disk — Phase 1"]
+    BLOB["ObjectStorage<br/>Azure Blob / S3 — Phase 2+"]
+  end
+
+  FE -->|"HTTPS REST<br/>JWT in Authorization header"| API
+  API -->|"tenant_id + userId<br/>read from JWT claims"| SVC
+  SVC -->|"EF Core query<br/>filtered by tenant_id"| DB
+  SVC -->|"UploadAsync / DownloadAsync(key)"| STORE
+  STORE -.->|"today"| LOCAL
+  STORE -.->|"future, same interface"| BLOB
+  DB -.->|"holds StorageKey pointer only<br/>never file bytes"| STORE
+</pre>
+      </div>
+      <figcaption>Every request resolves tenant identity from the JWT at the API layer before the service layer touches the database or storage — the same path regardless of whether storage is local disk or Blob, and regardless of whether the deployment is shared SaaS or a single-tenant on-prem instance.</figcaption>
+    </figure>
+  </div>
+
+  <div class="sheet">
+    <div class="sheet-eyebrow">SHEET 2 / 3 — UPLOAD FLOW</div>
+    <h2>Uploading a document</h2>
+    <figure>
+      <div class="drawing">
+<pre class="mermaid">
+%%{init: {'theme':'base', 'themeVariables': {
+  'background': '#0D2C58',
+  'actorBkg': '#123463',
+  'actorBorder': '#EAF2FF',
+  'actorTextColor': '#EAF2FF',
+  'signalColor': '#EAF2FF',
+  'signalTextColor': '#EAF2FF',
+  'labelBoxBkgColor': '#123463',
+  'labelBoxBorderColor': '#EAF2FF',
+  'labelTextColor': '#EAF2FF',
+  'loopTextColor': '#EAF2FF',
+  'noteBkgColor': '#1B3A6B',
+  'noteTextColor': '#EAF2FF',
+  'noteBorderColor': '#EAF2FF',
+  'activationBkgColor': '#1B3A6B',
+  'activationBorderColor': '#EAF2FF',
+  'sequenceNumberColor': '#0D2C58',
+  'fontFamily': 'ui-monospace, Consolas, monospace'
+}}}%%
+sequenceDiagram
+  participant FE as Angular FE
+  participant API as API layer
+  participant SVC as Service layer
+  participant ST as IDocumentStorage
+  participant DB as Postgres
+
+  FE->>API: POST /api/documents<br/>(multipart: file + documentTypeId + processStepInstanceId)
+  API->>API: read tenant_id + userId from JWT
+  API->>API: validate MIME type + size limit
+  API->>SVC: CreateDocument(command)
+  SVC->>SVC: generate DocumentId<br/>build StorageKey {tenantId}/{yyyy}/{mm}/{documentId}
+  SVC->>ST: UploadAsync(stream, key)
+  ST-->>SVC: bytes written to disk
+  SVC->>DB: INSERT Document (metadata + StorageKey)
+  Note over SVC,DB: File is written before the DB row commits —<br/>a failed insert leaves an orphan file,<br/>never a DB row pointing at nothing
+  DB-->>SVC: row committed
+  SVC-->>API: DocumentId
+  API-->>FE: 201 Created { documentId }
+</pre>
+      </div>
+      <figcaption>The file is written to storage before the database row is committed, so a failure after the write leaves a harmless orphaned file on disk rather than a document record that points at nothing.</figcaption>
+    </figure>
+  </div>
+
+  <div class="sheet">
+    <div class="sheet-eyebrow">SHEET 3 / 3 — DOWNLOAD FLOW</div>
+    <h2>Downloading a document</h2>
+    <figure>
+      <div class="drawing">
+<pre class="mermaid">
+%%{init: {'theme':'base', 'themeVariables': {
+  'background': '#0D2C58',
+  'actorBkg': '#123463',
+  'actorBorder': '#EAF2FF',
+  'actorTextColor': '#EAF2FF',
+  'signalColor': '#EAF2FF',
+  'signalTextColor': '#EAF2FF',
+  'labelBoxBkgColor': '#123463',
+  'labelBoxBorderColor': '#EAF2FF',
+  'labelTextColor': '#EAF2FF',
+  'loopTextColor': '#EAF2FF',
+  'noteBkgColor': '#1B3A6B',
+  'noteTextColor': '#EAF2FF',
+  'noteBorderColor': '#EAF2FF',
+  'activationBkgColor': '#1B3A6B',
+  'activationBorderColor': '#EAF2FF',
+  'sequenceNumberColor': '#0D2C58',
+  'fontFamily': 'ui-monospace, Consolas, monospace'
+}}}%%
+sequenceDiagram
+  participant FE as Angular FE
+  participant API as API layer
+  participant SVC as Service layer
+  participant DB as Postgres
+  participant ST as IDocumentStorage
+
+  FE->>API: GET /api/documents/{id}/download (JWT)
+  API->>SVC: GetDocument(id)
+  SVC->>DB: SELECT ... WHERE id = @id AND tenant_id = @tenant
+  Note over SVC,DB: EF Core global query filter adds<br/>the tenant_id condition automatically
+  alt document belongs to another tenant
+    DB-->>SVC: no row
+    SVC-->>API: not found
+    API-->>FE: 404 Not Found
+    Note over API,FE: Never 403 — existence of another<br/>tenant's document is never revealed
+  else document found, permission checked
+    DB-->>SVC: Document row
+    SVC->>SVC: check role permission for this document/type/process
+    SVC->>ST: DownloadAsync(storageKey)
+    ST-->>SVC: file stream
+    SVC-->>API: stream + filename + mimeType
+    API-->>FE: 200 OK (Content-Disposition, streamed bytes)
+  end
+</pre>
+      </div>
+      <figcaption>A document from another tenant is invisible, not forbidden — the tenant-filtered query returns no row at all, so the API has nothing to answer with except "not found."</figcaption>
+    </figure>
+  </div>
+
+  <div class="footer-note">DMS — DOCUMENT MANAGEMENT SYSTEM · ARCHITECTURE REFERENCE</div>
+
+</div>
+
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({ startOnLoad: true });
+</script>
+
+</body>
+</html>

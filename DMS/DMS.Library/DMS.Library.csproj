@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Helpers\" />
     <Folder Include="Validators\" />
     <Folder Include="Repositories\Implementations\" />
@@ -16,6 +20,16 @@
     <Folder Include="Services\Implementations\" />
     <Folder Include="Services\Interfaces\" />
     <Folder Include="Services\Models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DMS.Shared\DMS.Shared.csproj" />
+    <ProjectReference Include="..\DLMS.Tenants\DLMS.Tenants.csproj" />
   </ItemGroup>
 
 </Project>

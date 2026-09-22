@@ -3,6 +3,14 @@ bin/
 obj/
 .vs/
 *.user
+*.Backup.tmp
+*.Backup (*).tmp
+
+# Docker
+.env
+
+# Local config
+appsettings.Development.json
 
 # Node / Angular
 node_modules/

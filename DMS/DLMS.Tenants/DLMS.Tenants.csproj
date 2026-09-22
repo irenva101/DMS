@@ -7,22 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="NewFolder\**" />
-    <EmbeddedResource Remove="NewFolder\**" />
-    <None Remove="NewFolder\**" />
+    <Folder Include="DTOs\" />
+    <Folder Include="Seeds\" />
+    <Folder Include="Services\Models\Permissions\DataOut\" />
+    <Folder Include="Services\Models\User\DataOut\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
-    <Folder Include="DTOs\" />
-    <Folder Include="Middleware\" />
-    <Folder Include="Repositories\Implementations\" />
-    <Folder Include="Repositories\Interfaces\" />
-    <Folder Include="Repositories\UOWs\" />
-    <Folder Include="Seeds\" />
-    <Folder Include="Services\Implementation\" />
-    <Folder Include="Services\Interfaces\" />
-    <Folder Include="Services\Models\" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.13" />
+    <PackageReference Include="OpenIddict.Abstractions" Version="7.7.1" />
+    <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="7.7.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DMS.Shared\DMS.Shared.csproj" />
   </ItemGroup>
 
 </Project>

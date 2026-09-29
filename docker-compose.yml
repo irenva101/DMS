@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     env_file: .env
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "127.0.0.1:${POSTGRES_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -13,6 +13,45 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - dms-network
+
+  dms-api:
+    image: ghcr.io/irenva101/dms-api:${TAG:-latest}
+    build:
+      context: ./DMS
+      dockerfile: DMS.API/Dockerfile
+    container_name: dms-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      GITHUB_SHA: ${GITHUB_SHA:-local}
+      ConnectionStrings__DmsDb: "User ID=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Host=postgres;Port=5432;Database={db_name};Pooling=true;"
+      ConnectionStrings__SharedDb: "User ID=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Host=postgres;Port=5432;Database={db_name};Pooling=true;"
+    networks:
+      - dms-network
+
+  dms-frontend:
+    image: ghcr.io/irenva101/dms-frontend:${TAG:-latest}
+    build:
+      context: ./DMS.Ng
+    container_name: dms-frontend
+    restart: unless-stopped
+    depends_on:
+      - dms-api
+    environment:
+      API_URL: /api
+      GITHUB_SHA: ${GITHUB_SHA:-local}
+    ports:
+      - "80:8080"
+    networks:
+      - dms-network
+
+networks:
+  dms-network:
 
 volumes:
   postgres_data:

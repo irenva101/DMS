@@ -1,7 +1,7 @@
-﻿using DMS.API.Helper;
-using DMS.API.StartupSetup.Swagger.SchemaFilters;
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using DMS.API.Helper;
+using DMS.API.StartupSetup.Swagger.SchemaFilters;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -89,7 +89,6 @@ namespace DMS.API.StartupSetup.Swagger
             {
                 Name = "ApiKey",
                 Type = SecuritySchemeType.ApiKey,
-                In = ParameterLocation.Header,
                 Description = "Enter your API key"
             });
 

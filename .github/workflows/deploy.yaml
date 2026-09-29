@@ -1,0 +1,53 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create .env from secrets
+        run: |
+          cat > .env <<'EOF'
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB=postgres
+          POSTGRES_PORT=5432
+          EOF
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push images
+        run: |
+          docker compose build dms-api dms-frontend
+          docker compose push dms-api dms-frontend
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to VPS
+        env:
+          DOCKER_HOST: ssh://root@${{ secrets.DEPLOY_HOST }}
+        run: |
+          docker compose pull
+          docker compose up -d --no-build

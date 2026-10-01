@@ -88,8 +88,8 @@
   content: "";
   position: absolute;
   top: 9px;
-  left: -50%;
-  width: 100%;
+  left: calc(-50% + 14px);
+  width: calc(100% - 28px);
   height: 2px;
   background: var(--line-strong);
   z-index: 0;

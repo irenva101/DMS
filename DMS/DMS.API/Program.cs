@@ -1,9 +1,11 @@
 using DLMS.Tenants;
+using DMS.API.Helper;
 using DMS.API.Services.GitRevisionService;
 using DMS.API.StartupSetup;
 using DMS.API.StartupSetup.Swagger;
 using DMS.Library;
 using DMS.Shared.Config;
+using DMS.Shared.Constants;
 using DMS.Shared.Helper;
 using Asp.Versioning;
 using Microsoft.Extensions.Options;
@@ -20,7 +22,7 @@ DmsConfigValidator.Validate(appConfig); // AppConfig validation
 builder.Services.AddSingleton(appConfig);
 
 //databases
-builder.Services.AddDmsDatabase(appConfig.ConnectionStrings.DmsDb.Replace("{db_name}", "simpas"));
+builder.Services.AddDmsDatabase(appConfig.ConnectionStrings.DmsDb.Replace("{db_name}", "default"));
 builder.Services.AddSharedDatabase(appConfig.ConnectionStrings.SharedDb.Replace("{db_name}", "shared"));
 
 // Add services.
@@ -53,11 +55,16 @@ builder.Services.AddSwaggerGen(c =>
 });
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerGenOptions>();
 
+if (appConfig.LongMigration)
+    builder.Services.AddHostedService<ExecuteMigrationsDms>();
+
 var app = builder.Build();
 
-using (var startupScope = app.Services.CreateScope())
+if (!appConfig.LongMigration)
 {
+    using var startupScope = app.Services.CreateScope();
     startupScope.ExecutePendingTenantMigrations();
+    await startupScope.ExecutePendingDmsMigrations(app.Logger, app.Environment.IsEnvironment(nameof(AppSettingsEnvironment.Test)));
 }
 
 app.UseCors("Dms");

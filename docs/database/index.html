@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DMS model baze</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<style>
+/* Layout: one reading column with a sticky section index on wide screens; tables scroll inside their own frames. Palette = the DMS app's own light/dark tokens. */
+:root {
+  --bg: #e6e7ec;
+  --surface: #ffffff;
+  --sunken: #f1f2f5;
+  --ink: #1f3038;
+  --ink-soft: #4a5d68;
+  --accent: #214156;
+  --accent-2: #5085a5;
+  --line: #d5dbe3;
+  --line-strong: #a9c5db;
+  --new: #15803d; --new-soft: #e4f3e8;
+  --chg: #a15c00; --chg-soft: #fbf0dd;
+  --q: #b42318; --q-soft: #fbeae8;
+  --font-display: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+  --font-body: "IBM Plex Sans", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10161a; --surface: #171f22; --sunken: #1d2629; --ink: #e7edea; --ink-soft: #a7b3af;
+    --accent: #6cb3c2; --accent-2: #8bbde0; --line: #2a3538; --line-strong: #3a4649;
+    --new: #5cc588; --new-soft: #17301f; --chg: #e0a94a; --chg-soft: #3a2f18; --q: #e5695f; --q-soft: #3a1f1d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10161a; --surface: #171f22; --sunken: #1d2629; --ink: #e7edea; --ink-soft: #a7b3af;
+  --accent: #6cb3c2; --accent-2: #8bbde0; --line: #2a3538; --line-strong: #3a4649;
+  --new: #5cc588; --new-soft: #17301f; --chg: #e0a94a; --chg-soft: #3a2f18; --q: #e5695f; --q-soft: #3a1f1d;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.6; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 44px; }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; font-size: 13px; }
+nav.toc .label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--accent-2); font-weight: 600; margin-bottom: 8px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+nav.toc a { color: var(--ink-soft); text-decoration: none; display: block; padding: 3px 8px; border-left: 2px solid var(--line); }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--accent); border-left-color: var(--accent); outline: none; }
+main { min-width: 0; display: grid; gap: 52px; }
+header.top h1 { font-family: var(--font-display); font-size: clamp(30px, 4vw, 40px); line-height: 1.15; margin: 0 0 10px; text-wrap: balance; }
+header.top p { margin: 0; color: var(--ink-soft); max-width: 68ch; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.chip { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-soft); }
+section > h2 { font-family: var(--font-display); font-size: 25px; margin: 0 0 6px; text-wrap: balance; }
+section > .lede { color: var(--ink-soft); margin: 0 0 18px; max-width: 72ch; }
+h3 { font-size: 16px; margin: 26px 0 8px; }
+p, li { max-width: 74ch; }
+code, .mono { font-family: var(--font-mono); font-size: .88em; }
+code { background: var(--sunken); padding: 1px 5px; border-radius: 4px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.shape h4 { margin: 0 0 4px; font-size: 14px; }
+.shape .who { font-size: 12px; color: var(--accent-2); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+.shape p { margin: 6px 0 0; font-size: 13.5px; color: var(--ink-soft); }
+.principles { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; counter-reset: p; }
+.principles li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; counter-increment: p; }
+.principles li::before { content: counter(p); font-family: var(--font-mono); font-size: 12px; color: var(--accent); border: 1px solid var(--line-strong); border-radius: 50%; width: 24px; height: 24px; display: grid; place-items: center; margin-top: 1px; }
+.diagram { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.diagram pre.mermaid { margin: 0; background: transparent; }
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-soft); background: var(--sunken); font-weight: 600; }
+tr:last-child td { border-bottom: none; }
+td.col { font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap; color: var(--accent); }
+td.type { font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap; color: var(--ink-soft); }
+.entity { display: grid; gap: 8px; }
+.entity-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; }
+.entity-head h3 { margin: 0; font-family: var(--font-mono); font-size: 16px; font-weight: 500; }
+.entity-head .what { color: var(--ink-soft); font-size: 13.5px; }
+.tag { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: .05em; }
+.tag.new { background: var(--new-soft); color: var(--new); }
+.tag.chg { background: var(--chg-soft); color: var(--chg); }
+.tag.keep { background: var(--sunken); color: var(--ink-soft); border: 1px solid var(--line); }
+.group-label { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--accent-2); font-weight: 600; margin: 30px 0 -4px; border-top: 1px solid var(--line-strong); padding-top: 14px; }
+.stack { display: grid; gap: 26px; }
+.note { font-size: 13px; color: var(--ink-soft); margin: 0; }
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; }
+.flow span.s { background: var(--surface); border: 1px solid var(--line-strong); padding: 3px 10px; border-radius: 999px; }
+.flow span.a { color: var(--ink-soft); }
+.qs { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; counter-reset: q; }
+.qs li { counter-increment: q; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px 14px 54px; position: relative; max-width: none; }
+.qs li::before { content: counter(q); position: absolute; left: 16px; top: 14px; width: 26px; height: 26px; border-radius: 50%; background: var(--q-soft); color: var(--q); font-weight: 600; font-size: 13px; display: grid; place-items: center; }
+.qs h4 { margin: 0 0 4px; font-size: 14.5px; }
+.qs p { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+.qs .rec { margin-top: 6px; font-size: 13px; color: var(--ink); }
+.qs .rec b { color: var(--accent); }
+.screens { display: grid; gap: 40px; }
+.screen h3 { margin: 0 0 4px; font-size: 17px; }
+.screen .where { font-size: 12.5px; color: var(--ink-soft); margin: 0 0 10px; font-family: var(--font-mono); }
+.screen figure { margin: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface); }
+.screen img { display: block; width: 100%; height: auto; }
+.legend { list-style: none; padding: 0; margin: 12px 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 18px; }
+.legend li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 10px; font-size: 13.5px; max-width: none; }
+.legend .n { width: 22px; height: 22px; border-radius: 50%; background: #c2410c; color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; margin-top: 1px; }
+.legend .ui { color: var(--ink-soft); }
+.legend code { color: var(--accent); }
+.legend .calc { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--chg); background: var(--chg-soft); padding: 1px 6px; border-radius: 999px; }
+@media (max-width: 860px) {
+  .legend { grid-template-columns: minmax(0, 1fr); }
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-block: 24px 60px; }
+  nav.toc { position: static; }
+  nav.toc ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid3 { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+
+<style>body { margin: 0; }</style>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs";
+  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  mermaid.initialize({ startOnLoad: true, theme: dark ? "dark" : "neutral" });
+</script>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc" aria-label="Sadržaj">
+  <div class="label">Sadržaj</div>
+  <ol>
+    <li><a href="#osnova">Polazna tačka</a></li>
+    <li><a href="#principi">Principi</a></li>
+    <li><a href="#dijagram">Dijagram</a></li>
+    <li><a href="#tabele">Tabele</a></li>
+    <li><a href="#statusi">Statusi</a></li>
+    <li><a href="#moduli">Moduli u modelu</a></li>
+    <li><a href="#izmene">Izmene postojećih</a></li>
+    <li><a href="#tehnicko">Tehničke napomene</a></li>
+    <li><a href="#pitanja">Pitanja</a></li>
+    <li><a href="#ekrani">Ekrani i kolone</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="top">
+  <h1>DMS model baze</h1>
+  <p>Predlog šeme za bazu klijenta (šema <code>dms</code>), napravljen na osnovu svih modula na frontendu i postojećeg backend-a. Cilj je da jedan model pokrije Poslovne transakcije, Banku, Menice i Distribuciju Foseko, a da Ugovori, Obrasci i registar menica imaju svoje tabele.</p>
+  <div class="meta">
+    <span class="chip">12 tabela u bazi klijenta</span>
+    <span class="chip">korisnici ostaju u shared bazi</span>
+    <span class="chip">14 otvorenih pitanja</span>
+  </div>
+</header>
+
+<section id="osnova">
+  <h2>Polazna tačka: tri oblika toka na frontendu</h2>
+  <p class="lede">Mock podaci koriste tri različita načina praćenja dokumenata. Model ih svodi na jedan: proces ima korake, a korak može (ali ne mora) imati imenovane dokumente koje traži.</p>
+  <div class="grid3">
+    <div class="panel shape">
+      <div class="who">Poslovne transakcije</div>
+      <h4>Korak = jedan očekivani dokument</h4>
+      <p>5 koraka (Zahtev za ponudu → Faktura), status se čuva, „Verifikuj“ je ručna akcija.</p>
+    </div>
+    <div class="panel shape">
+      <div class="who">Menice, Distribucija</div>
+      <h4>Korak = više imenovanih dokumenata</h4>
+      <p>Npr. „Isporuka“ (inostrani) traži JCI, Potvrdu o kvalitetu, Račun, CMR i Izjavu o poreklu. Status koraka se računa.</p>
+    </div>
+    <div class="panel shape">
+      <div class="who">Banka</div>
+      <h4>Ravna lista dokumenata</h4>
+      <p>JCI, Faktura, Nalog 70, Izvod iz banke (+ Zahtev za kupovinu deviza za inostrano). U modelu: proces sa jednim korakom.</p>
+    </div>
+  </div>
+</section>
+
+<section id="principi">
+  <h2>Principi modela</h2>
+  <ol class="principles">
+    <li><div><b>Šablon i instanca su odvojeni.</b> Ti definišeš tip procesa, korake i tražene dokumente. Pri kreiranju procesa prave se njegovi koraci. Korisnik ne pravi šablone.</div></li>
+    <li><div><b>U bazi se čuvaju samo ljudske odluke.</b> <code>is_verified</code> i <code>is_completed</code> se čuvaju. „Nedostaje / delimično / priloženo“, „ističe uskoro“ i „dospela“ se računaju iz dokumenata i datuma. Zato status ne može da se razilazi sa stvarnim stanjem.</div></li>
+    <li><div><b>Ko i kada piše samo u audit logu.</b> Tabele nemaju kolone <code>created_by</code> ni <code>verified_at</code>.</div></li>
+    <li><div><b>Firma je jedna tabela.</b> Danas svaki modul ima svoju kopiju liste firmi sa imenom kao tekstom. U modelu svi pokazuju na <code>companies</code>.</div></li>
+    <li><div><b>Fajl je uvek red u <code>documents</code></b>, bez obzira da li pripada koraku, ugovoru, menici, obrascu ili samo arhivi. Upload, download, raspored foldera i audit rade isto za sve.</div></li>
+    <li><div><b>Ništa se fizički ne briše.</b> Soft delete preko <code>is_deleted</code>, koji već postoji u baznoj klasi <code>Entity</code>.</div></li>
+  </ol>
+</section>
+
+<section id="dijagram">
+  <h2>Dijagram veza</h2>
+  <p class="lede">Gornji deo su šabloni, srednji instance procesa, desno registri. Sve tabele nasleđuju <code>id</code>, <code>dms_id</code>, <code>is_deleted</code> i <code>last_update_time</code>.</p>
+  <div class="diagram">
+<pre class="mermaid">
+erDiagram
+  process_types ||--o{ step_definitions : "ima korake"
+  step_definitions ||--o{ document_requirements : "traži dokumente"
+  process_types ||--o{ processes : "šablon za"
+  companies ||--o{ processes : "klijent"
+  processes ||--o{ processes : "nadređeni proces"
+  processes ||--o{ steps : "ima"
+  step_definitions ||--o{ steps : "definiše"
+  steps ||--o{ documents : "prilozi"
+  document_requirements ||--o{ documents : "ispunjava"
+  companies ||--o{ contracts : "ugovorna strana"
+  companies ||--o{ bills : "dužnik"
+  bills |o--o| processes : "tok menice"
+  contracts }o--o| steps : "ispunjava korak"
+  contracts ||--o{ documents : "fajl ugovora"
+  bills ||--o{ documents : "fajl menice"
+  form_templates ||--o{ documents : "fajl šablona"
+  processes ||--o{ audit_logs : "istorija"
+</pre>
+  </div>
+  <p class="note">Tabela <code>code_sequences</code> nije prikazana. Ona samo deli redne brojeve za šifre.</p>
+</section>
+
+<section id="tabele">
+  <h2>Tabele</h2>
+  <p class="lede">Oznake: <span class="tag new">novo</span> tabela ne postoji u kodu, <span class="tag chg">izmena</span> postoji i menja se, <span class="tag keep">ostaje</span> postoji i ostaje kakva jeste.</p>
+
+  <div class="stack">
+  <div class="group-label">Šifarnici i šabloni</div>
+
+  <div class="entity">
+    <div class="entity-head"><h3>companies</h3><span class="tag new">novo</span><span class="what">Firme sa kojima klijent posluje (kupci, dobavljači, dužnici)</span></div>
+    <div class="tbl"><table>
+      <tr><th>Kolona</th><th>Tip</th><th>Opis</th></tr>
+      <tr><td class="col">name</td><td class="type">varchar(200)</td><td>„Metalprom d.o.o.“</td></tr>
+      <tr><td class="col">tax_id</td><td class="type">varchar(20) null</td><td>PIB (domaći) ili VAT broj (strani). Jedinstven kad je popunjen.</td></tr>
+      <tr><td class="col">registration_number</td><td class="type">varchar(20) null</td><td>Matični broj</td></tr>
+      <tr><td class="col">country_code</td><td class="type">char(2)</td><td><code>RS</code>, <code>DE</code>, <code>AT</code>… Domaća firma = <code>RS</code>.</td></tr>
+      <tr><td class="col">address</td><td class="type">varchar(300) null</td><td></td></tr>
+    </table></div>
+    <p class="note">Inicijali i boja logoa ostaju računati na frontendu (<code>companyInitials</code>, <code>companyColor</code>), pa ne treba kolona. Za URL se umesto slug-a (<code>metalprom</code>) koristi <code>dms_id</code>.</p>
+  </div>
+
+  <div class="entity">
+    <div class="entity-head"><h3>process_types</h3><span class="tag chg">izmena</span><span class="what">Šablon procesa, npr. „Distribucija Foseko: inostrani kupac“</span></div>
+    <div class="tbl"><table>
+      <tr><th>Kolona</th><th>Tip</th><th>Opis</th></tr>
+      <tr><td class="col">name</td><td class="type">varchar(100)</td><td>Postoji</td></tr>
+      <tr><td class="col">module</td><td class="type">enum ProcessModule</td><td><b>Novo.</b> <code>BusinessTransaction</code>, <code>Import</code>, <code>Distribution</code>, <code>Export</code>, <code>Bank</code>, <code>BillOfExchange</code>. Određuje u kom meniju se proces vidi.</td></tr>
+      <tr><td class="col">code_prefix</td><td class="type">varchar(10)</td><td><b>Novo.</b> <code>TRX</code>, <code>DIST-D</code>, <code>DIST-I</code>, <code>BNK</code>, <code>BNK-I</code>, <code>MNC</code></td></tr>
+      <tr><td class="col">is_active</td><td class="type">bool</td><td><b>Novo.</b> Stari šablon se isključuje umesto da se briše, pa postojeći procesi ostaju ispravni.</td></tr>
+    </table></div>
+    <p class="note">Domaća i inostrana varijanta su dva tipa u istom modulu, jer imaju različite korake (Distribucija) ili dokumente (Banka).</p>
+  </div>
+
+  <div class="entity">
+    <div class="entity-head"><h3>step_definitions</h3><span class="tag keep">ostaje</span><span class="what">Koraci šablona</span></div>
+    <div class="tbl"><table>
+      <tr><th>Kolona</th><th>Tip</th><th>Opis</th></tr>
+      <tr><td class="col">process_type_id</td><td class="type">FK</td><td></td></tr>
+      <tr><td class="col">name</td><td class="type">varchar(100)</td><td>„Prihvatanje ponude od Foseka“</td></tr>
+      <tr><td class="col">description</td><td class="type">varchar(1000) null</td><td>Uputstvo korisniku: šta ide u korak i zašto</td></tr>
+      <tr><td class="col">step_order</td><td class="type">int</td><td>Jedinstven unutar tipa procesa</td></tr>
+    </table></div>
+  </div>
+
+  <div class="entity">
+    <div class="entity-head"><h3>document_requirements</h3><span class="tag new">novo</span><span class="what">Imenovani dokumenti koje korak traži</span></div>
+    <div class="tbl"><table>
+      <tr><th>Kolona</th><th>Tip</th><th>Opis</th></tr>
+      <tr><td class="col">step_definition_id</td><td class="type">FK</td><td></td></tr>
+      <tr><td class="col">name</td><td class="type">varchar(150)</td><td>„CMR“, „Menično ovlašćenje“, „Nalog 70“</td></tr>
+      <tr><td class="col">sort_order</td><td class="type">int</td><td>Redosled prikaza u koraku</td></tr>
+      <tr><td class="col">is_required</td><td class="type">bool</td><td>Ako je <code>false</code>, korak može da se verifikuje i bez njega</td></tr>
+    </table></div>
+    <p class="note">Korak bez ijednog zahteva radi kao slobodan upload uz opis, kako smo se ranije dogovorile. Ime „Dostava menice“ postoji u dva koraka menice, ali su to dva različita reda, pa nema zabune.</p>
+  </div>
+
+  <div class="group-label">Instance procesa</div>
+
+  <div class="entity">
+    <div class="entity-head"><h3>processes</h3><span class="tag chg">izmena</span><span class="what">Jedna transakcija, slučaj distribucije, bankarsko plaćanje ili tok menice</span></div>
+    <div class="tbl"><table>
+      <tr><th>Kolona</th><th>Tip</th><th>Opis</th></tr>
+      <tr><td class="col">code</td><td class="type">varchar(30) unique</td><td><code>TRX-2026-0142</code>, generiše se iz <code>code_sequences</code></td></tr>
+      <tr><td class="col">process_type_id</td><td class="type">FK</td><td></td></tr>
+      <tr><td class="col">company_id</td><td class="type">FK</td><td><b>Zamenjuje tekstualnu kolonu <code>client</code>.</b></td></tr>
+      <tr><td class="col">parent_process_id</td><td class="type">FK null</td><td>Npr. Distribucija Foseko kao deo Uvoza</td></tr>
+      <tr><td class="col">is_completed</td><td class="type">bool</td><td>Završna potvrda; zaključava proces</td></tr>
+      <tr><td class="col">sent_to_sef</td><td class="type">bool</td><td><b>Novo.</b> Dugme „Pošalji na sef“ kod domaćih slučajeva Distribucije (pitanje 3)</td></tr>
+    </table></div>
+  </div>
+
+  <div class="entity">
+    <div class="entity-head"><h3>steps</h3><span class="tag keep">ostaje</span><span class="what">Koraci konkretnog procesa, prave se iz šablona pri kreiranju procesa</span></div>
+    <div class="tbl"><table>
+      <tr><th>Kolona</th><th>Tip</th><th>Opis</th></tr>
+      <tr><td class="col">process_id</td><td class="type">FK</td><td></td></tr>
+      <tr><td class="col">step_definition_id</td><td class="type">FK</td><td>Unique zajedno sa <code>process_id</code></td></tr>
+      <tr><td class="col">is_verified</td><td class="type">bool</td><td>Poništava se na svaki dodat ili obrisan dokument</td></tr>
+    </table></div>
+  </div>
+
+  <div class="entity">
+    <div class="entity-head"><h3>documents</h3><span class="tag chg">izmena</span><span class="what">Svaki fajl u sistemu</span></div>
+    <div class="tbl"><table>
+      <tr><th>Kolona</th><th>Tip</th><th>Opis</th></tr>
+      <tr><td class="col">original_file_name</td><td class="type">varchar(255)</td><td>Postoji</td></tr>
+      <tr><td class="col">storage_key</td><td class="type">varchar(500) unique</td><td><code>TRX-2026-0142_Metalprom/04_Isporuka/CMR__c91d.pdf</code></td></tr>
+      <tr><td class="col">content_type</td><td class="type">varchar(100)</td><td>Postoji</td></tr>
+      <tr><td class="col">size_bytes</td><td class="type">bigint</td><td>Postoji</td></tr>
+      <tr><td class="col">step_id</td><td class="type">FK null</td><td>Postoji</td></tr>
+      <tr><td class="col">requirement_id</td><td class="type">FK null</td><td><b>Novo.</b> Koji traženi dokument fajl ispunjava. Prazno znači dodatni prilog u koraku.</td></tr>
+      <tr><td class="col">contract_id</td><td class="type">FK null</td><td><b>Novo.</b> Fajl ugovora</td></tr>
+      <tr><td class="col">bill_id</td><td class="type">FK null</td><td><b>Novo.</b> Sken menice</td></tr>
+      <tr><td class="col">form_template_id</td><td class="type">FK null</td><td><b>Novo.</b> Fajl obrasca</td></tr>
+    </table></div>
+    <p class="note">Check constraint: popunjen je najviše jedan vlasnik (korak, ugovor, menica ili obrazac). Bez vlasnika dokument je samostalan u Arhivi. <code>requirement_id</code> sme da postoji samo uz <code>step_id</code>.</p>
+  </div>
+
+  <div class="group-label">Registri</div>
+
+  <div class="entity">
+    <div class="entity-head"><h3>contracts</h3><span class="tag new">novo</span><span class="what">Modul Ugovori</span></div>
+    <div class="tbl"><table>
+      <tr><th>Kolona</th><th>Tip</th><th>Opis</th></tr>
+      <tr><td class="col">code</td><td class="type">varchar(30) unique</td><td><code>CTR-0021</code></td></tr>
+      <tr><td class="col">company_id</td><td class="type">FK</td><td></td></tr>
+      <tr><td class="col">title</td><td class="type">varchar(200)</td><td>„Ugovor o prodaji čelika“</td></tr>
+      <tr><td class="col">signed_date</td><td class="type">date</td><td></td></tr>
+      <tr><td class="col">expiry_date</td><td class="type">date null</td><td>Prazno za ugovore na neodređeno</td></tr>
+      <tr><td class="col">value</td><td class="type">numeric(18,2) null</td><td></td></tr>
+      <tr><td class="col">currency</td><td class="type">char(3)</td><td><code>EUR</code>, <code>RSD</code>… (pitanje 7)</td></tr>
+      <tr><td class="col">fulfills_step_id</td><td class="type">FK null</td><td>Ugovor je ujedno ispunjenje koraka u nekom procesu (pitanje 6)</td></tr>
+    </table></div>
+  </div>
+
+  <div class="entity">
+    <div class="entity-head"><h3>bills</h3><span class="tag new">novo</span><span class="what">Registar menica (iznos, rokovi)</span></div>
+    <div class="tbl"><table>
+      <tr><th>Kolona</th><th>Tip</th><th>Opis</th></tr>
+      <tr><td class="col">code</td><td class="type">varchar(30) unique</td><td><code>MEN-0011</code></td></tr>
+      <tr><td class="col">company_id</td><td class="type">FK</td><td>Dužnik</td></tr>
+      <tr><td class="col">amount</td><td class="type">numeric(18,2)</td><td>850.000,00</td></tr>
+      <tr><td class="col">currency</td><td class="type">char(3)</td><td><code>RSD</code></td></tr>
+      <tr><td class="col">issue_date</td><td class="type">date</td><td></td></tr>
+      <tr><td class="col">maturity_date</td><td class="type">date</td><td>Iz ovoga se računa „aktivna / dospeva uskoro / dospela“</td></tr>
+      <tr><td class="col">process_id</td><td class="type">FK null unique</td><td>Tok dokumenata te menice (<code>MNC-…</code>), ako je pokrenut (pitanje 4)</td></tr>
+    </table></div>
+  </div>
+
+  <div class="entity">
+    <div class="entity-head"><h3>form_templates</h3><span class="tag new">novo</span><span class="what">Modul Obrasci</span></div>
+    <div class="tbl"><table>
+      <tr><th>Kolona</th><th>Tip</th><th>Opis</th></tr>
+      <tr><td class="col">code</td><td class="type">varchar(30) unique</td><td><code>OBR-011</code></td></tr>
+      <tr><td class="col">name</td><td class="type">varchar(200)</td><td>„Otpremnica — šablon“</td></tr>
+      <tr><td class="col">category</td><td class="type">varchar(50)</td><td>Kadrovski, Prodaja, Opšte</td></tr>
+    </table></div>
+    <p class="note">Sam fajl je red u <code>documents</code> sa <code>form_template_id</code>. Nova verzija obrasca znači novi dokument, a prikazuje se poslednji.</p>
+  </div>
+
+  <div class="group-label">Infrastruktura</div>
+
+  <div class="entity">
+    <div class="entity-head"><h3>audit_logs</h3><span class="tag chg">izmena</span><span class="what">Ko je šta uradio</span></div>
+    <div class="tbl"><table>
+      <tr><th>Kolona</th><th>Tip</th><th>Opis</th></tr>
+      <tr><td class="col">time</td><td class="type">timestamptz</td><td>Postoji</td></tr>
+      <tr><td class="col">user_id</td><td class="type">uuid</td><td><code>dms_id</code> korisnika iz shared baze, bez FK</td></tr>
+      <tr><td class="col">action</td><td class="type">enum AuditAction</td><td>Postojeće + <code>ContractCreated</code>, <code>ContractUpdated</code>, <code>BillCreated</code>, <code>BillUpdated</code>, <code>SentToSef</code>, <code>ProcessCreated</code></td></tr>
+      <tr><td class="col">process_id</td><td class="type">FK null</td><td><b>Postaje nullable</b>, jer se loguju i ugovori i menice</td></tr>
+      <tr><td class="col">step_id, document_id</td><td class="type">FK null</td><td>Postoje</td></tr>
+      <tr><td class="col">contract_id, bill_id</td><td class="type">FK null</td><td><b>Novo</b></td></tr>
+      <tr><td class="col">description</td><td class="type">varchar(500) null</td><td>Snimak u trenutku akcije, npr. ime fajla ili „iznos 850.000 → 900.000“</td></tr>
+    </table></div>
+  </div>
+
+  <div class="entity">
+    <div class="entity-head"><h3>code_sequences</h3><span class="tag new">novo</span><span class="what">Brojač za šifre, bez rupa i duplikata</span></div>
+    <div class="tbl"><table>
+      <tr><th>Kolona</th><th>Tip</th><th>Opis</th></tr>
+      <tr><td class="col">prefix</td><td class="type">varchar(10)</td><td>PK zajedno sa <code>year</code></td></tr>
+      <tr><td class="col">year</td><td class="type">int</td><td>Za šifre bez godine stoji <code>0</code></td></tr>
+      <tr><td class="col">last_value</td><td class="type">int</td><td>Uvećava se u istoj transakciji u kojoj se pravi zapis (<code>UPDATE … RETURNING</code>)</td></tr>
+    </table></div>
+  </div>
+  </div>
+</section>
+
+<section id="statusi">
+  <h2>Kako se računaju statusi</h2>
+  <p class="lede">Ništa od ovoga nije kolona u bazi. Računa se u upitu, pa radi i za filtere.</p>
+
+  <h3>Traženi dokument</h3>
+  <div class="flow"><span class="s">Nedostaje</span><span class="a">→ bar jedan nebrisan fajl sa tim <code>requirement_id</code> →</span><span class="s">Predato</span></div>
+
+  <h3>Korak</h3>
+  <div class="tbl"><table>
+    <tr><th>Status</th><th>Uslov</th><th>Sadašnja oznaka u UI</th></tr>
+    <tr><td>Prazan</td><td>nema nijednog fajla</td><td>Nedostaje</td></tr>
+    <tr><td>Delimično</td><td>ima fajlova, ali fali bar jedan obavezan traženi dokument</td><td>U toku</td></tr>
+    <tr><td>Priloženo</td><td>svi obavezni su predati (ili korak nema zahteva, a ima bar jedan fajl), nije verifikovan</td><td>Priloženo</td></tr>
+    <tr><td>Verifikovano</td><td><code>is_verified = true</code>; dozvoljeno samo iz stanja „Priloženo“</td><td>Verifikovano / Kompletno</td></tr>
+  </table></div>
+
+  <h3>Proces (vrednosti filtera)</h3>
+  <div class="tbl"><table>
+    <tr><th>Status</th><th>Uslov</th></tr>
+    <tr><td>Nije započet</td><td>nijedan korak nema fajl</td></tr>
+    <tr><td>U toku</td><td>bar jedan fajl postoji, ali nisu svi koraci verifikovani</td></tr>
+    <tr><td>Verifikovan</td><td>svi koraci verifikovani, čeka se završna potvrda</td></tr>
+    <tr><td>Završen</td><td><code>is_completed = true</code>; zaključan, a admin može ponovo da ga otvori</td></tr>
+  </table></div>
+
+  <h3>Ugovor i menica (po datumu)</h3>
+  <div class="tbl"><table>
+    <tr><th>Zapis</th><th>Pravilo (kao u sadašnjem UI)</th></tr>
+    <tr><td>Ugovor</td><td>istekao ako je <code>expiry_date</code> prošao, ističe uskoro ako je do 60 dana, inače aktivan</td></tr>
+    <tr><td>Menica</td><td>dospela ako je <code>maturity_date</code> prošao, dospeva uskoro ako je do 14 dana, inače aktivna</td></tr>
+  </table></div>
+</section>
+
+<section id="moduli">
+  <h2>Kako se moduli uklapaju</h2>
+  <p class="lede">Primeri šablona koji bi se seed-ovali iz sadašnjih mock podataka.</p>
+  <div class="tbl"><table>
+    <tr><th>Modul (meni)</th><th>Tip procesa / tabela</th><th>Koraci → traženi dokumenti</th></tr>
+    <tr><td>Poslovne transakcije</td><td>„Poslovna transakcija“ <span class="mono">TRX</span></td><td>Zahtev za ponudu → Zahtev kupca · Ponuda → Ponuda · Verifikacija → Potvrda ponude · Isporuka → Otpremnica · Faktura → Faktura (pitanje 1)</td></tr>
+    <tr><td>Uvoz › Distribucija Foseko</td><td>„Distribucija: domaći“ <span class="mono">DIST-D</span>, „Distribucija: inostrani“ <span class="mono">DIST-I</span></td><td>5 zajedničkih koraka, pa domaći: Otpremnica, Faktura; inostrani: Isporuka (JCI, Potvrda o kvalitetu, Račun, CMR, Izjava o poreklu na računu), Otpremnica</td></tr>
+    <tr><td>Banka</td><td>„Plaćanje: domaće“ <span class="mono">BNK</span>, „Plaćanje: inostrano“ <span class="mono">BNK-I</span></td><td>Jedan korak „Dokumentacija“ → JCI, Faktura, Nalog 70, Izvod iz banke (+ Zahtev za kupovinu deviza). UI ne prikazuje korak, samo listu.</td></tr>
+    <tr><td>Menice</td><td><code>bills</code> + tip „Tok menice“ <span class="mono">MNC</span></td><td>Zahtev za kupovinu deviza · Dostava menice od strane dužnika (Dostava menice, Menično ovlašćenje, Naplata menice) · Dostava menice u banku (Dostava menice, Nalog za isplatu) · Izvod iz banke</td></tr>
+    <tr><td>Ugovori</td><td><code>contracts</code></td><td>Nema koraka. Fajl je u <code>documents</code>.</td></tr>
+    <tr><td>Obrasci</td><td><code>form_templates</code></td><td>Nema koraka. Fajl je u <code>documents</code>.</td></tr>
+    <tr><td>Uvoz, Izvoz</td><td>novi tipovi procesa</td><td>Koraci nisu definisani na frontendu (pitanje 10)</td></tr>
+    <tr><td>Arhiva</td><td><code>documents</code> bez vlasnika + pretraga svih</td><td>Nema posebne tabele</td></tr>
+    <tr><td>Skladište</td><td>nije u ovom predlogu</td><td>Poseban domen (artikli, isporuke, stanje), pitanje 12</td></tr>
+  </table></div>
+</section>
+
+<section id="izmene">
+  <h2>Izmene u već napravljenim entitetima</h2>
+  <div class="tbl"><table>
+    <tr><th>Fajl</th><th>Izmena</th></tr>
+    <tr><td class="col">ProcessTypeEntity</td><td>+ <code>Module</code>, <code>CodePrefix</code>, <code>IsActive</code></td></tr>
+    <tr><td class="col">ProcessEntity</td><td><code>Client</code> (tekst) → <code>CompanyId</code> (FK); + <code>SentToSef</code></td></tr>
+    <tr><td class="col">DocumentEntity</td><td>+ <code>RequirementId</code>, <code>ContractId</code>, <code>BillId</code>, <code>FormTemplateId</code>; unique na <code>StorageKey</code>; check constraint za vlasnika</td></tr>
+    <tr><td class="col">AuditLogEntity</td><td><code>ProcessId</code> postaje nullable; + <code>ContractId</code>, <code>BillId</code>; nove akcije u <code>AuditAction</code></td></tr>
+    <tr><td class="col">StepDefinitionEntity</td><td>unique index (<code>ProcessTypeId</code>, <code>Order</code>)</td></tr>
+    <tr><td class="col">StepEntity</td><td>unique index (<code>ProcessId</code>, <code>StepDefinitionId</code>)</td></tr>
+    <tr><td class="col">nove</td><td><code>CompanyEntity</code>, <code>DocumentRequirementEntity</code>, <code>ContractEntity</code>, <code>BillEntity</code>, <code>FormTemplateEntity</code>, <code>CodeSequenceEntity</code>, enum <code>ProcessModule</code></td></tr>
+  </table></div>
+</section>
+
+<section id="tehnicko">
+  <h2>Tehničke napomene iz pregleda koda</h2>
+  <div class="tbl"><table>
+    <tr><th>Nalaz</th><th>Predlog</th></tr>
+    <tr><td>Kod pravi <b>posebnu bazu po klijentu</b> (<code>{db_name}</code> = akronim), a <code>docs/architecture-diagrams.html</code> opisuje jednu bazu sa <code>tenant_id</code> kolonom</td><td>Zadržati bazu po klijentu, kao u HES-u. Ovaj model zato nema <code>tenant_id</code> (pitanje 8).</td></tr>
+    <tr><td>Shared baza koristi šemu <code>tenant</code>, a connection string dodaje <code>Search Path=shared</code></td><td>Uskladiti na jedno ime</td></tr>
+    <tr><td><code>ExecutePendingDmsMigrations</code> se ne poziva, a <code>IUtilityService</code> je zakomentarisan</td><td>Uključiti, inače se baze klijenata nikad ne migriraju</td></tr>
+    <tr><td>Shared baza čuva enum-e kao tekst (<code>RegisterEnums</code>), a <code>DmsContext</code> ne</td><td>Pozvati isto i u <code>DmsContext</code>, pa će i <code>AuditAction</code> biti čitljiv tekst</td></tr>
+    <tr><td>Na frontendu brisanje fajla ne vraća status</td><td>Rešava se samo od sebe, jer se status računa iz nebrisanih dokumenata</td></tr>
+  </table></div>
+</section>
+
+<section id="pitanja">
+  <h2>Pitanja</h2>
+  <p class="lede">Uz svako pitanje je moj predlog. Odgovori mogu biti kratki, npr. „1: da, 2: ne“.</p>
+  <ol class="qs">
+    <li><h4>Poslovne transakcije: slobodan upload ili imenovani dokumenti?</h4><p>Dogovorile smo da korak ima samo opis i da korisnik kači šta hoće. Mock na frontendu ipak ima „očekivani dokument“ po koraku, a Banka, Menice i Distribucija prate svaki dokument po imenu. Model podržava oba načina.</p><p class="rec"><b>Predlog:</b> transakcije dobijaju po jedan traženi dokument po koraku (Zahtev kupca, Ponuda…), plus mogućnost dodatnih priloga.</p></li>
+    <li><h4>Ručna verifikacija i u Banci, Menicama i Distribuciji?</h4><p>Sad su tamo koraci „kompletni“ čim su svi dokumenti predati, bez dugmeta „Verifikuj“. Kod transakcija je verifikacija ručna.</p><p class="rec"><b>Predlog:</b> isto pravilo svuda (ručna verifikacija koraka + završna potvrda), jer si rekla da svaki korak ima verifikaciju.</p></li>
+    <li><h4>„Pošalji na sef“: SEF ili sef?</h4><p>Ako je to Sistem e-faktura (SEF), da li je za sada dovoljna oznaka da je poslato, ili planiraš pravu integraciju sa SEF API-jem?</p><p class="rec"><b>Predlog:</b> za sada samo oznaka <code>sent_to_sef</code> + upis u audit log.</p></li>
+    <li><h4>Menice: MEN-0011 i MNC-001 su ista menica?</h4><p>Sada postoje dva odvojena skupa podataka: registar sa iznosom i datumima i tok dokumenata. Između njih nema veze.</p><p class="rec"><b>Predlog:</b> jedna menica u <code>bills</code>, a tok dokumenata je njen proces (<code>process_id</code>), kad postoji.</p></li>
+    <li><h4>Domaće / inostrano: osobina firme ili posla?</h4><p>Distribucija razlikuje domaće i inostrane kupce, a Banka domaća i inostrana plaćanja. Može li domaća firma imati inostrano plaćanje?</p><p class="rec"><b>Predlog:</b> odluka je na tipu procesa, a UI predloži varijantu na osnovu <code>country_code</code> firme.</p></li>
+    <li><h4>Ugovor kao ispunjenje koraka</h4><p>Ranije je dogovoreno da ugovor ili menica mogu istovremeno biti ispunjenje koraka u nekom procesu i da se vide na oba mesta. Da li ti to i dalje treba?</p><p class="rec"><b>Predlog:</b> zadržati <code>fulfills_step_id</code> samo za ugovore. Ako ti ne treba, izbacuje se.</p></li>
+    <li><h4>Valute</h4><p>Ugovori se prikazuju u €, menice u RSD, a valuta nigde nije sačuvana.</p><p class="rec"><b>Predlog:</b> valuta po zapisu (<code>currency</code>), a podrazumevana je EUR za ugovore i RSD za menice.</p></li>
+    <li><h4>Baza po klijentu ili zajednička baza?</h4><p>Kod pravi posebnu Postgres bazu za svaku firmu koja koristi DMS. Dokument sa arhitekturom kaže jedna baza sa <code>tenant_id</code>.</p><p class="rec"><b>Predlog:</b> baza po klijentu, jer je već napravljena i bolje razdvaja podatke firmi.</p></li>
+    <li><h4>Format šifara</h4><p>Danas postoje <code>TRX-2026-0142</code> (sa godinom), <code>BNK-001</code> i <code>MNC-001</code> (bez godine), <code>CTR-0021</code>. Da li se šifre generišu automatski, i da li sve treba da imaju godinu?</p><p class="rec"><b>Predlog:</b> automatski i svuda <code>PREFIKS-GODINA-BROJ</code>, a brojač kreće od 1 svake godine.</p></li>
+    <li><h4>Uvoz i Izvoz: koji su koraci?</h4><p>Na frontendu su to samo prazne stranice. Da li je Distribucija Foseko jedan od tokova uvoza (podproces) ili poseban modul koji je samo u meniju ispod Uvoza?</p><p class="rec"><b>Predlog:</b> Distribucija je samostalan tip, a <code>parent_process_id</code> se koristi kad transakcija ima svoj uvoz. Koraci Uvoza i Izvoza se dodaju kad ih definišeš.</p></li>
+    <li><h4>Šta kad promeniš šablon?</h4><p>Ako tipu procesa dodaš ili izmeniš korak, šta se dešava sa procesima koji su već u toku?</p><p class="rec"><b>Predlog:</b> postojeći procesi ostaju na starim koracima, a novi korak važi samo za nove procese. Šablon se ne briše nego isključuje (<code>is_active</code>).</p></li>
+    <li><h4>Skladište</h4><p>Ranije je dogovoreno da je to poseban domen (artikli, isporuke, stanje zaliha).</p><p class="rec"><b>Predlog:</b> ne ulazi u ovu migraciju, nego se radi posle Poslovnih transakcija.</p></li>
+    <li><h4>„Nedavno pregledano“</h4><p>Sada se čuva u browseru, pa se razlikuje na svakom računaru.</p><p class="rec"><b>Predlog:</b> ostaje u browseru, bez tabele.</p></li>
+    <li><h4>Koji podaci o firmi?</h4><p>Predložila sam ime, PIB, matični broj, zemlju i adresu. Treba li još nešto, npr. kontakt osoba, email, telefon ili napomena?</p><p class="rec"><b>Predlog:</b> ovih pet polja za početak.</p></li>
+  </ol>
+</section>
+
+<section id="ekrani">
+  <h2>Ekrani i kolone</h2>
+  <p class="lede">Slike su iz aplikacije sa sadašnjim mock podacima. Svaki broj pokazuje odakle bi taj podatak dolazio u bazi. Oznaka <span class="calc">računa se</span> znači da podatak nije kolona, nego se izvodi iz drugih kolona.</p>
+
+  <div class="screens">
+    <div class="screen">
+      <h3>Poslovne transakcije: lista</h3>
+      <p class="where">/business-transactions</p>
+      <figure><img src="shots/tx-list.png" alt="Lista poslovnih transakcija sa numerisanim oznakama" width="1920" height="1450" loading="lazy"></figure>
+      <ol class="legend">
+        <li><span class="n">1</span><span><span class="ui">Naslov modula</span> · <code>process_types.module</code> = BusinessTransaction. Lista prikazuje sve procese čiji tip pripada tom modulu.</span></li>
+        <li><span class="n">2</span><span><span class="ui">Metalprom d.o.o.</span> · <code>companies.name</code> preko <code>processes.company_id</code></span></li>
+        <li><span class="n">3</span><span><span class="ui">TRX-2026-0142</span> · <code>processes.code</code></span></li>
+        <li><span class="n">4</span><span><span class="ui">Zahtev za ponudu</span> · <code>step_definitions.name</code> preko <code>steps.step_definition_id</code>, redosled iz <code>step_order</code></span></li>
+        <li><span class="n">5</span><span><span class="ui">Krug statusa</span> · <span class="calc">računa se</span> iz <code>steps.is_verified</code> i fajlova u <code>documents</code></span></li>
+        <li><span class="n">6</span><span><span class="ui">2 dokumenta nedostaje</span> · <span class="calc">računa se</span>: broj koraka bez fajla</span></li>
+        <li><span class="n">7</span><span><span class="ui">4 čekaju dokument</span> · <span class="calc">računa se</span>: broj procesa po statusu</span></li>
+      </ol>
+    </div>
+
+    <div class="screen">
+      <h3>Poslovna transakcija: detalj</h3>
+      <p class="where">/business-transactions/TRX-2026-0142</p>
+      <figure><img src="shots/tx-detail.png" alt="Detalj poslovne transakcije sa numerisanim oznakama" width="1920" height="1140" loading="lazy"></figure>
+      <ol class="legend">
+        <li><span class="n">1</span><span><span class="ui">Metalprom d.o.o.</span> · <code>companies.name</code></span></li>
+        <li><span class="n">2</span><span><span class="ui">TRX-2026-0142</span> · <code>processes.code</code></span></li>
+        <li><span class="n">3</span><span><span class="ui">Zahtev za ponudu</span> · <code>step_definitions.name</code></span></li>
+        <li><span class="n">4</span><span><span class="ui">Zahtev kupca</span> · <code>document_requirements.name</code> (danas <code>expectedDocument</code>, pitanje 1)</span></li>
+        <li><span class="n">5</span><span><span class="ui">Verifikovano</span> · <span class="calc">računa se</span>; „Verifikovano“ znači <code>steps.is_verified</code> = true</span></li>
+        <li><span class="n">6</span><span><span class="ui">Upload</span> · novi red u <code>documents</code> (<code>step_id</code>, <code>requirement_id</code>, <code>storage_key</code>, <code>content_type</code>, <code>size_bytes</code>) + <code>audit_logs</code> DocumentAttached. Poništava <code>steps.is_verified</code>.</span></li>
+        <li><span class="n">7</span><span><span class="ui">Zahtev_kupca.pdf</span> · <code>documents.original_file_name</code>; „×“ postavlja <code>documents.is_deleted</code> + audit DocumentDeleted</span></li>
+        <li><span class="n">8</span><span><span class="ui">Verifikuj</span> · <code>steps.is_verified</code> = true + <code>audit_logs</code> StepVerified</span></li>
+        <li><span class="n">9</span><span><span class="ui">2/5 koraka završeno</span> · <span class="calc">računa se</span>: verifikovani koraci / svi koraci</span></li>
+      </ol>
+    </div>
+
+    <div class="screen">
+      <h3>Distribucija Foseko: inostrani kupac</h3>
+      <p class="where">/distribucija-foseko/DIST-I-002</p>
+      <figure><img src="shots/dist.png" alt="Detalj slučaja distribucije sa numerisanim oznakama" width="1920" height="2200" loading="lazy"></figure>
+      <ol class="legend">
+        <li><span class="n">1</span><span><span class="ui">Nordic Foundry Supplies</span> · <code>companies.name</code>; <code>country_code</code> ≠ RS znači strani kupac</span></li>
+        <li><span class="n">2</span><span><span class="ui">DIST-I-002</span> · <code>processes.code</code>; prefiks iz <code>process_types.code_prefix</code></span></li>
+        <li><span class="n">3</span><span><span class="ui">Zahtev za ponudu</span> · <code>step_definitions.name</code>; broj levo je <code>step_order</code></span></li>
+        <li><span class="n">4</span><span><span class="ui">Kompletno</span> · <span class="calc">računa se</span>: status koraka</span></li>
+        <li><span class="n">5</span><span><span class="ui">Narudžbina po njihovoj ponudi</span> · <code>document_requirements.name</code></span></li>
+        <li><span class="n">6</span><span><span class="ui">Predato</span> · <span class="calc">računa se</span>: postoji fajl sa tim <code>documents.requirement_id</code></span></li>
+        <li><span class="n">7</span><span><span class="ui">Narudžbina_po_njihovoj_ponudi.pdf</span> · <code>documents.original_file_name</code> + <code>requirement_id</code></span></li>
+        <li><span class="n">8</span><span><span class="ui">Dokument o prihvatanju ponude</span> · drugi red u <code>document_requirements</code> za isti korak</span></li>
+        <li><span class="n">9</span><span><span class="ui">Sledeći korak</span> · <span class="calc">računa se</span>: prvi korak koji nije verifikovan</span></li>
+      </ol>
+    </div>
+
+    <div class="screen">
+      <h3>Banka: inostrano plaćanje</h3>
+      <p class="where">/bank/BNK-I-001</p>
+      <figure><img src="shots/bank.png" alt="Detalj bankarske transakcije sa numerisanim oznakama" width="1920" height="1050" loading="lazy"></figure>
+      <ol class="legend">
+        <li><span class="n">1</span><span><span class="ui">Deutsche Handel GmbH</span> · <code>companies.name</code> (<code>country_code</code> = DE)</span></li>
+        <li><span class="n">2</span><span><span class="ui">BNK-I-001</span> · <code>processes.code</code>; tip procesa „Plaćanje: inostrano“</span></li>
+        <li><span class="n">3</span><span><span class="ui">Potrebni dokumenti</span> · jedan red u <code>steps</code> (definicija „Dokumentacija“), koji UI ne prikazuje kao korak</span></li>
+        <li><span class="n">4</span><span><span class="ui">JCI</span> · <code>document_requirements.name</code></span></li>
+        <li><span class="n">5</span><span><span class="ui">Predato</span> · <span class="calc">računa se</span> iz <code>documents.requirement_id</code></span></li>
+        <li><span class="n">6</span><span><span class="ui">JCI.pdf</span> · red u <code>documents</code> (<code>step_id</code> + <code>requirement_id</code>)</span></li>
+      </ol>
+    </div>
+
+    <div class="screen">
+      <h3>Menice: tok dokumenata</h3>
+      <p class="where">/bills-of-exchange/menice/MNC-001</p>
+      <figure><img src="shots/menica.png" alt="Detalj toka menice sa numerisanim oznakama" width="1920" height="2120" loading="lazy"></figure>
+      <ol class="legend">
+        <li><span class="n">1</span><span><span class="ui">Metalprom d.o.o.</span> · <code>companies.name</code> preko <code>processes.company_id</code> (isto kao <code>bills.company_id</code>)</span></li>
+        <li><span class="n">2</span><span><span class="ui">MNC-001</span> · <code>processes.code</code>; <code>bills.process_id</code> pokazuje na ovaj proces (pitanje 4)</span></li>
+        <li><span class="n">3</span><span><span class="ui">Zahtev za kupovinu deviza</span> · <code>step_definitions.name</code></span></li>
+        <li><span class="n">4</span><span><span class="ui">Dostava menice (korak 2)</span> · <code>document_requirements.name</code></span></li>
+        <li><span class="n">5</span><span><span class="ui">Dostava menice (korak 3)</span> · isto ime, ali poseban red u <code>document_requirements</code>, pa se ne meša sa brojem 4</span></li>
+        <li><span class="n">6</span><span><span class="ui">U toku</span> · <span class="calc">računa se</span>: status „Delimično“</span></li>
+      </ol>
+    </div>
+
+    <div class="screen">
+      <h3>Menice: registar po firmi</h3>
+      <p class="where">/bills-of-exchange/metalprom</p>
+      <figure><img src="shots/bills.png" alt="Lista menica firme sa numerisanim oznakama" width="1920" height="810" loading="lazy"></figure>
+      <ol class="legend">
+        <li><span class="n">1</span><span><span class="ui">Metalprom d.o.o.</span> · <code>companies.name</code> preko <code>bills.company_id</code></span></li>
+        <li><span class="n">2</span><span><span class="ui">MEN-0011</span> · <code>bills.code</code></span></li>
+        <li><span class="n">3</span><span><span class="ui">Izdata / Dospeva</span> · <code>bills.issue_date</code>, <code>bills.maturity_date</code></span></li>
+        <li><span class="n">4</span><span><span class="ui">850.000 RSD</span> · <code>bills.amount</code> + <code>bills.currency</code></span></li>
+        <li><span class="n">5</span><span><span class="ui">Dospela</span> · <span class="calc">računa se</span> iz <code>maturity_date</code> (14 dana)</span></li>
+        <li><span class="n">6</span><span><span class="ui">Preuzmi</span> · red u <code>documents</code> sa <code>bill_id</code> (sken menice)</span></li>
+      </ol>
+    </div>
+
+    <div class="screen">
+      <h3>Ugovori po firmi</h3>
+      <p class="where">/contracts/metalprom</p>
+      <figure><img src="shots/contracts.png" alt="Lista ugovora firme sa numerisanim oznakama" width="1920" height="810" loading="lazy"></figure>
+      <ol class="legend">
+        <li><span class="n">1</span><span><span class="ui">Metalprom d.o.o.</span> · <code>companies.name</code> preko <code>contracts.company_id</code></span></li>
+        <li><span class="n">2</span><span><span class="ui">Ugovor o prodaji čelika</span> · <code>contracts.title</code></span></li>
+        <li><span class="n">3</span><span><span class="ui">CTR-0021</span> · <code>contracts.code</code></span></li>
+        <li><span class="n">4</span><span><span class="ui">Potpisan / Ističe</span> · <code>contracts.signed_date</code>, <code>contracts.expiry_date</code></span></li>
+        <li><span class="n">5</span><span><span class="ui">82.000 €</span> · <code>contracts.value</code> + <code>contracts.currency</code></span></li>
+        <li><span class="n">6</span><span><span class="ui">Aktivan</span> · <span class="calc">računa se</span> iz <code>expiry_date</code> (60 dana)</span></li>
+        <li><span class="n">7</span><span><span class="ui">Preuzmi</span> · red u <code>documents</code> sa <code>contract_id</code> (fajl ugovora)</span></li>
+      </ol>
+    </div>
+
+    <div class="screen">
+      <h3>Obrasci</h3>
+      <p class="where">/forms</p>
+      <figure><img src="shots/forms.png" alt="Lista obrazaca sa numerisanim oznakama" width="1920" height="1530" loading="lazy"></figure>
+      <ol class="legend">
+        <li><span class="n">1</span><span><span class="ui">Obrasci</span> · tabela <code>form_templates</code>, bez procesa i koraka</span></li>
+        <li><span class="n">2</span><span><span class="ui">Kadrovski</span> · <code>form_templates.category</code></span></li>
+        <li><span class="n">3</span><span><span class="ui">Zahtev za godišnji odmor</span> · <code>form_templates.name</code>; šifra <code>code</code> (OBR-001) se ne prikazuje</span></li>
+        <li><span class="n">4</span><span><span class="ui">Preuzmi</span> · najnoviji red u <code>documents</code> sa <code>form_template_id</code></span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+</main>
+</div>
+
+</body>
+</html>

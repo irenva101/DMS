@@ -2,6 +2,8 @@
 using DLMS.Tenants.Data;
 using DLMS.Tenants.Middleware;
 using DLMS.Tenants.Repositories.UOWs;
+using DLMS.Tenants.Services.Implementation;
+using DLMS.Tenants.Services.Interfaces;
 using DMS.Shared.Handlers.Implementations;
 using DMS.Shared.Handlers.Interfaces;
 using DMS.Shared.Handlers.Model;
@@ -53,9 +55,9 @@ namespace DLMS.Tenants
             collection.AddScoped<IUserContextHandler, UserContextHandler>();
 
             //services
-            //collection.AddScoped<IUtilityService, UtilityService>();
-            //collection.AddScoped<IRoleService, RoleService>();
-            //collection.AddScoped<IUserService, UserService>();
+            collection.AddScoped<IUtilityService, UtilityService>();
+            collection.AddScoped<IRoleService, RoleService>();
+            collection.AddScoped<IUserService, UserService>();
             //collection.AddScoped<IPermissionsService, PermissionsService>();
             //collection.AddScoped<IEmailService, EmailService>();
 

@@ -33,6 +33,13 @@ builder.Services.AddTenantServices(); //tenant project services
 // Add services to the container.
 builder.Services.AddControllers();
 
+// Only needed locally, where ng serve runs on another port; in production nginx serves both on one origin
+builder.Services.AddCors(options => options.AddPolicy("Dms", policy => policy
+    .WithOrigins("http://localhost:4200")
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials()));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddApiVersioning(

@@ -14,6 +14,8 @@ namespace DMS.Shared.Config
         [ValidateObject()]
         public LoggingConfig Logging { get; set; }
         public Otlp? Otlp { get; set; }
+        [ValidateObject()]
+        public FileStorage FileStorage { get; set; }
         [Required(ErrorMessage = "GITHUB_SHA is required.")]
         public string GITHUB_SHA { get; set; }
         [Required(ErrorMessage = "LongMigration is required.")]

@@ -11,6 +11,7 @@ namespace DMS.API.Controllers.Base
     public class BaseController : BaseProblemDetails
     {
         [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public Guid? GetUserId()
         {
             var idClaim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
@@ -18,6 +19,7 @@ namespace DMS.API.Controllers.Base
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public Guid? GetRoleId()
         {
             var idClaim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "roleId")?.Value;
@@ -25,6 +27,7 @@ namespace DMS.API.Controllers.Base
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public Guid? GetUtilityId()
         {
             var idClaim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "utilityId")?.Value;
@@ -32,6 +35,7 @@ namespace DMS.API.Controllers.Base
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public string? GetUtility()
         {
             var idClaim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "utility")?.Value;
@@ -39,6 +43,7 @@ namespace DMS.API.Controllers.Base
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public int GetTimeZone()
         {
             var claim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "timeZone")?.Value;

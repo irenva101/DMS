@@ -7,6 +7,7 @@ namespace DMS.API.Controllers.Base
     public class BaseProblemDetails : ControllerBase
     {
         [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         protected IActionResult HandleResult<T>(Result<T, ResponseError> result)
         {
             if (result.IsSuccess)
@@ -23,6 +24,7 @@ namespace DMS.API.Controllers.Base
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public IActionResult HandleValidationProblem(FluentValidation.Results.ValidationResult result)
         {
             var errors = result.Errors
@@ -42,6 +44,7 @@ namespace DMS.API.Controllers.Base
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public IActionResult HandleBadRequest(string error)
         {
             var problem = ProblemDetailsFactory.CreateProblemDetails(httpContext: HttpContext,
@@ -51,6 +54,7 @@ namespace DMS.API.Controllers.Base
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public ProblemDetails HandleNotFound(ResponseError error)
         {
             var problem = ProblemDetailsFactory.CreateProblemDetails(httpContext: HttpContext,
@@ -60,6 +64,7 @@ namespace DMS.API.Controllers.Base
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public ProblemDetails HandleInternalServerError(ResponseError error)
         {
             var problem = ProblemDetailsFactory.CreateProblemDetails(httpContext: HttpContext,
@@ -69,6 +74,7 @@ namespace DMS.API.Controllers.Base
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public IActionResult HandleInternalServerError(string error)
         {
             var problem = ProblemDetailsFactory.CreateProblemDetails(httpContext: HttpContext,
@@ -79,6 +85,7 @@ namespace DMS.API.Controllers.Base
 
 
         [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public IActionResult HandleForbiddenError(string message)
         {
             var problem = ProblemDetailsFactory.CreateProblemDetails(httpContext: HttpContext,
@@ -89,6 +96,7 @@ namespace DMS.API.Controllers.Base
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public ProblemDetails HandleUnauthorizedError(ResponseError error)
         {
             var problem = ProblemDetailsFactory.CreateProblemDetails(httpContext: HttpContext,
@@ -99,6 +107,7 @@ namespace DMS.API.Controllers.Base
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public IActionResult HandleUnauthorizedError(string message)
         {
             var problem = ProblemDetailsFactory.CreateProblemDetails(httpContext: HttpContext,
@@ -109,6 +118,7 @@ namespace DMS.API.Controllers.Base
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public ProblemDetails CreateProblemDetails(ResponseError error, HttpContext context)
         {
             var problemDetails = ProblemDetailsFactory.CreateProblemDetails(

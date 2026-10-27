@@ -3,6 +3,8 @@ using DLMS.Tenants.Services.Models.Utility.DataOut;
 using DMS.Library.Constants.Seeds;
 using DMS.Library.Data;
 using DMS.Library.Repositories.UOWs;
+using DMS.Library.Services.Implementations;
+using DMS.Library.Services.Interfaces;
 using DMS.Shared.Config;
 using DMS.Shared.DTOs;
 using DMS.Shared.Handlers.Model;
@@ -63,6 +65,9 @@ namespace DMS.Library
         public static IServiceCollection AddDmsServices(this IServiceCollection collection, DmsConfig appConfig)
         {
             collection.AddScoped<IUnitOfWork, UnitOfWork>();
+            collection.AddScoped<IFileStorage, LocalFileStorage>();
+            collection.AddScoped<IFormTemplateService, FormTemplateService>();
+            collection.AddScoped<IDocumentService, DocumentService>();
             //collection.AddScoped<IFileService, FileService>();
             //if (appConfig.Sftp.SftpOnPremise)
             //{

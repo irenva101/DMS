@@ -12,6 +12,9 @@ obj/
 # Local config
 appsettings.Development.json
 
+# Uploaded files when running the API locally
+DMS/DMS.API/files/
+
 # Node / Angular
 node_modules/
 dist/

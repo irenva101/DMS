@@ -31,6 +31,8 @@ services:
       GITHUB_SHA: ${GITHUB_SHA:-local}
       ConnectionStrings__DmsDb: "User ID=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Host=postgres;Port=5432;Database={db_name};Pooling=true;"
       ConnectionStrings__SharedDb: "User ID=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Host=postgres;Port=5432;Database={db_name};Pooling=true;"
+    volumes:
+      - /srv/dms/files:/app/files
     networks:
       - dms-network
 
@@ -43,7 +45,8 @@ services:
     depends_on:
       - dms-api
     environment:
-      API_URL: /api
+      # Empty: the generated client already prefixes every path with /api
+      API_URL: ""
       GITHUB_SHA: ${GITHUB_SHA:-local}
     ports:
       - "127.0.0.1:8080:8080"

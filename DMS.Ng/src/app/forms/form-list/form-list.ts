@@ -1,9 +1,12 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { Client, FormTemplateDataOut } from '../../api/api-reference';
+import { ApiException, Client, FormTemplateDataOut } from '../../api/api-reference';
 import { Pager } from '../../shared/pager/pager';
 import { paginate } from '../../shared/pager/paginate';
 
 const PAGE_SIZE = 7;
+// Same as FileRules.MaxFileSizeBytes on the backend
+const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024;
+const FILE_TOO_LARGE = 'Fajl je prevelik. Najveća dozvoljena veličina je 50 MB.';
 
 @Component({
   selector: 'app-form-list',
@@ -104,6 +107,12 @@ export class FormList {
       return;
     }
 
+    // Checked here because the browser would upload the whole file before showing the server's rejection
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      this.saveError.set(FILE_TOO_LARGE);
+      return;
+    }
+
     this.saving.set(true);
     this.saveError.set(null);
     this.client.formsPOST(this.newName(), this.newCategory(), { data: file, fileName: file.name }).subscribe({
@@ -112,9 +121,14 @@ export class FormList {
         this.adding.set(false);
         this.load();
       },
-      error: () => {
+      error: (error: unknown) => {
         this.saving.set(false);
-        this.saveError.set('Obrazac nije sačuvan. Fajl mora biti dozvoljenog tipa i manji od 50 MB.');
+        // 413 comes from nginx or Kestrel before the request reaches the API
+        this.saveError.set(
+          error instanceof ApiException && error.status === 413
+            ? FILE_TOO_LARGE
+            :'Obrazac nije sačuvan. Fajl mora biti dozvoljenog tipa i manji od 50 MB.'
+        );
       }
     });
   }

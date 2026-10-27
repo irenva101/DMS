@@ -64,7 +64,12 @@
     }
     <div class="add-actions">
       <button class="btn-primary" type="button" [disabled]="saving()" (click)="save()">
-        {{ saving() ? 'Čuvanje...' : 'Sačuvaj' }}
+        @if (saving()) {
+          <span class="spinner" aria-hidden="true"></span>
+          Čuvanje...
+        } @else {
+          Sačuvaj
+        }
       </button>
       <button class="download-btn" type="button" [disabled]="saving()" (click)="adding.set(false)">Otkaži</button>
     </div>

@@ -23,10 +23,6 @@ namespace DMS.Library.Repositories.Models
         [Column("is_completed")]
         public bool IsCompleted { get; set; }
 
-        // "Pošalji na SEF" for domestic distribution cases
-        [Column("sent_to_sef")]
-        public bool SentToSef { get; set; }
-
         [Column("process_type_id")]
         public long ProcessTypeId { get; set; }
 

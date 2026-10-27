@@ -14,7 +14,6 @@ namespace DMS.Library.Repositories.Models
         [Column("prefix")]
         public string Prefix { get; set; }
 
-        // 0 for codes without a year
         [Column("year")]
         public int Year { get; set; }
 

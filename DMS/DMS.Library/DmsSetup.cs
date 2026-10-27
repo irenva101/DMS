@@ -1,5 +1,6 @@
 ﻿using DLMS.Tenants.Services.Interfaces;
 using DLMS.Tenants.Services.Models.Utility.DataOut;
+using DMS.Library.Constants.Seeds;
 using DMS.Library.Data;
 using DMS.Library.Repositories.UOWs;
 using DMS.Shared.Config;
@@ -132,6 +133,8 @@ namespace DMS.Library
                         var context = utilityScope.ServiceProvider.GetRequiredService<DmsContext>();
 
                         await context.Database.MigrateAsync();
+
+                        await new ProcessTypeSeeder(context).SeedProcessTypesAsync();
 
                         logger.LogInformation("Database migrate for {Acronym} finished", utility.Acronym);
                         results.Add(new MigrationResult { Context = "Dms", Acronym = utility.Acronym, Success = true });

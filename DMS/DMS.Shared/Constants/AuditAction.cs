@@ -15,7 +15,6 @@ namespace DMS.Shared.Constants
         ContractUpdated = 7,
         BillCreated = 8,
         BillUpdated = 9,
-        SentToSef = 10,
-        ProcessCreated = 11,
+        ProcessCreated = 10,
     }
 }

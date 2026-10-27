@@ -538,10 +538,6 @@ namespace DMS.Library.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("process_type_id");
 
-                    b.Property<bool>("SentToSef")
-                        .HasColumnType("boolean")
-                        .HasColumnName("sent_to_sef");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Code")

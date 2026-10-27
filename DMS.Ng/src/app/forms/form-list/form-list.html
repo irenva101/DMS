@@ -1,11 +1,75 @@
-<div class="mock-banner">◐ Prikaz sa mokovanim podacima — nije povezano sa bazom</div>
-
 <header class="page-head">
   <div>
     <h1 class="page-title">Obrasci</h1>
     <p class="page-sub">Gotovi šabloni dokumenata, spremni za preuzimanje.</p>
   </div>
+  @if (!adding()) {
+    <button class="btn-primary" type="button" (click)="openAdd()">
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 4v12M4 10h12"/></svg>
+      Novi obrazac
+    </button>
+  }
 </header>
+
+@if (adding()) {
+  <div class="add-panel">
+    <div class="section-label">Novi obrazac</div>
+    <div class="add-fields">
+      <label class="field">
+        <span>Naziv</span>
+        <input type="text" placeholder="npr. Zahtev za godišnji odmor" [value]="newName()" (input)="newName.set($any($event.target).value)" />
+      </label>
+      <label class="field">
+        <span>Kategorija</span>
+        <input type="text" list="form-categories" placeholder="npr. Kadrovski" [value]="newCategory()" (input)="newCategory.set($any($event.target).value)" />
+        <datalist id="form-categories">
+          @for (category of categories(); track category) {
+            <option [value]="category"></option>
+          }
+        </datalist>
+      </label>
+    </div>
+    <div class="field file-field">
+      <span>Fajl</span>
+      @if (newFile(); as file) {
+        <div class="file-card">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h6l3 3v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M12 3v3h3"/></svg>
+          <div class="file-info">
+            <span class="file-name">{{ file.name }}</span>
+            <span class="file-size">{{ formatSize(file.size) }}</span>
+          </div>
+          <button type="button" class="file-remove" (click)="newFile.set(null)" aria-label="Ukloni fajl">×</button>
+        </div>
+      } @else {
+        <div
+          class="dropzone"
+          [class.dragover]="dragOver()"
+          tabindex="0"
+          role="button"
+          (dragover)="$event.preventDefault(); dragOver.set(true)"
+          (dragleave)="dragOver.set(false)"
+          (drop)="onDrop($event)"
+          (click)="fileInput.click()"
+          (keydown.enter)="fileInput.click()"
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13V4M6.5 7.5 10 4l3.5 3.5"/><path d="M4 13v1.5A1.5 1.5 0 0 0 5.5 16h9a1.5 1.5 0 0 0 1.5-1.5V13"/></svg>
+          <span class="dropzone-title">Prevuci fajl ili klikni</span>
+          <span class="dropzone-hint">PDF, Word, Excel, slike, arhive · do 50 MB</span>
+          <input #fileInput type="file" hidden [accept]="acceptedFiles" (change)="onFileSelect($event)" />
+        </div>
+      }
+    </div>
+    @if (saveError()) {
+      <p class="add-error">{{ saveError() }}</p>
+    }
+    <div class="add-actions">
+      <button class="btn-primary" type="button" [disabled]="saving()" (click)="save()">
+        {{ saving() ? 'Čuvanje...' : 'Sačuvaj' }}
+      </button>
+      <button class="download-btn" type="button" [disabled]="saving()" (click)="adding.set(false)">Otkaži</button>
+    </div>
+  </div>
+}
 
 <div class="search-bar">
   <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="6"/><path d="M17 17l-4.5-4.5"/></svg>
@@ -17,21 +81,32 @@
   />
 </div>
 
+@if (loadFailed()) {
+  <p class="add-error">Obrasci nisu učitani. Proveri da li API radi pa osveži stranicu.</p>
+}
+
 @for (group of groupedForms(); track group.category) {
   <div class="section-label form-group-label">{{ group.category }}</div>
   <div class="form-list">
-    @for (form of group.items; track form.id) {
+    @for (form of group.items; track form.code) {
       <div class="form-card">
         <div class="form-name">{{ form.name }}</div>
         <button class="download-btn" type="button" (click)="download(form)">
           <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v9M6.5 9l3.5 3.5L13.5 9"/><path d="M4 14v1.5A1.5 1.5 0 0 0 5.5 17h9a1.5 1.5 0 0 0 1.5-1.5V14"/></svg>
           Preuzmi
         </button>
+        <button class="delete-btn" type="button" title="Obriši obrazac" (click)="remove(form)">
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M8 6V4h4v2M6 6l1 10h6l1-10"/></svg>
+        </button>
       </div>
     }
   </div>
 } @empty {
-  <p class="page-sub">Nema obrasca koji odgovara pretrazi "{{ searchTerm() }}".</p>
+  @if (searchTerm()) {
+    <p class="page-sub">Nema obrasca koji odgovara pretrazi "{{ searchTerm() }}".</p>
+  } @else if (!loadFailed()) {
+    <p class="page-sub">Još nema obrazaca. Dodaj prvi preko dugmeta „Novi obrazac“.</p>
+  }
 }
 
 <app-pager [page]="page()" [totalPages]="totalPages()" (pageChange)="page.set($event)" />

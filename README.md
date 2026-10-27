@@ -1,3 +1,4 @@
+```text
 /srv/dms/files/
 └── FOSEKO/                                   ← tenant (Acronym)
     ├── Poslovne-transakcije/
@@ -13,4 +14,4 @@
         └── OBR-001_Zahtev-za-godisnji-odmor/
             ├── zahtev-za-godisnji-odmor__b71e.docx   ← stara verzija
             └── zahtev-za-godisnji-odmor__4d02.docx   ← nova verzija (ova se prikazuje)
-****
+```
